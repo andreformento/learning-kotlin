@@ -1,4 +1,4 @@
-package com.andreformento.myapp.three
+package com.andreformento.myapp
 
 import kotlinx.coroutines.flow.Flow
 import org.springframework.context.annotation.Bean
@@ -10,6 +10,7 @@ import org.springframework.data.relational.core.mapping.Column
 import org.springframework.data.relational.core.mapping.Table
 import org.springframework.data.repository.kotlin.CoroutineCrudRepository
 import org.springframework.data.repository.query.Param
+import org.springframework.http.MediaType
 import org.springframework.stereotype.Component
 import org.springframework.web.reactive.function.server.*
 import org.springframework.web.reactive.function.server.ServerResponse.*
@@ -20,14 +21,15 @@ class RouterConfiguration {
 
     @Bean
     fun routes(postHandler: PostHandler) = coRouter {
-        "/posts".nest {
-            GET("", postHandler::all)
-            GET("/{id}", postHandler::get)
-            POST("", postHandler::create)
-            PUT("/{id}", postHandler::update)
-            DELETE("/{id}", postHandler::delete)
+        accept(MediaType.APPLICATION_JSON).nest {
+            "/posts".nest {
+                GET("", postHandler::all)
+                GET("/{id}", postHandler::get)
+                POST("", postHandler::create)
+                PUT("/{id}", postHandler::update)
+                DELETE("/{id}", postHandler::delete)
+            }
         }
-
     }
 }
 

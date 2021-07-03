@@ -10,7 +10,7 @@
 
 ## Run
 
-- Create database
+- Create database _(Postgres)_
   ```shell
   make database
   ```
@@ -37,3 +37,8 @@
 - https://github.com/tolkiana/liquibase-demo
 - https://github.com/hantsy/spring-kotlin-coroutines-sample
 - https://docs.spring.io/spring-data/r2dbc/docs/current/reference/html
+- https://hantsy.medium.com/reactive-accessing-rdbms-with-spring-data-r2dbc-d6e453f2837e
+
+## TODO
+- swagger
+- sec
