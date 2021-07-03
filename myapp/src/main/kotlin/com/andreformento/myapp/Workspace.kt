@@ -85,7 +85,7 @@ interface WorkspaceRepository : CoroutineCrudRepository<Workspace, UUID> {
 
     @Query(
         """
-        SELECT workspace FROM WHERE ID = :id
+        SELECT * FROM workspace WHERE ID = :id
     """
     )
     suspend fun findOne(@Param("id") id: UUID): Workspace?

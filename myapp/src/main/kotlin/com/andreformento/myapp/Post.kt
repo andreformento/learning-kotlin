@@ -81,7 +81,7 @@ interface PostRepository : CoroutineCrudRepository<Post, Long> {
 
     @Query(
         """
-        SELECT posts FROM WHERE ID = :id
+        SELECT * FROM posts WHERE ID = :id
     """
     )
     suspend fun findOne(@Param("id") id: Long): Post?
