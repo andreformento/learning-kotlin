@@ -20,7 +20,7 @@ import java.util.*
 class WorkspaceRouterConfiguration {
 
     @Bean
-    fun routes(workspaceHandler: WorkspaceHandler) = coRouter {
+    fun workspaceRoutes(workspaceHandler: WorkspaceHandler) = coRouter {
         accept(MediaType.APPLICATION_JSON).nest {
             "/workspaces".nest {
                 GET("", workspaceHandler::all)
