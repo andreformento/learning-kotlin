@@ -1,5 +1,5 @@
 spring:
   r2dbc:
-    url: "r2dbc:postgresql://localhost:5432/postgres?schema=mydb"
+    url: "r2dbc:postgresql://localhost:5432/mydb"
     username: "user"
     password: "password"

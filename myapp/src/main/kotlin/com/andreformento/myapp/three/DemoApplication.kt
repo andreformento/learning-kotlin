@@ -1,13 +1,9 @@
-package com.andreformento.myapp.one
+package com.andreformento.myapp.three
 
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.reactive.awaitSingle
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.data.annotation.Id
-import org.springframework.data.r2dbc.core.*
-import org.springframework.data.r2dbc.query.Criteria
-import org.springframework.data.r2dbc.query.Update
 import org.springframework.data.r2dbc.repository.Modifying
 import org.springframework.data.r2dbc.repository.Query
 import org.springframework.data.relational.core.mapping.Column
@@ -69,7 +65,6 @@ class PostHandler(private val posts: PostRepository) {
             else -> notFound().buildAndAwait()
         }
 
-
     }
 
     suspend fun delete(req: ServerRequest): ServerResponse {
@@ -80,124 +75,52 @@ class PostHandler(private val posts: PostRepository) {
 }
 
 @Component
-//class PostRepository(private val client: DatabaseClient) {
 interface PostRepository : CoroutineCrudRepository<Post, Long> {
 
-//    suspend fun count(): Long =
-//            client.execute("SELECT COUNT(*) FROM posts")
-//                    .asType<Long>()
-//                    .fetch()
-//                    .awaitOne()
-//    @Query("""
-//            SELECT COUNT(*) FROM posts
-//        """)
-//    suspend fun count(): List<Post>
-
-//    fun findAll(): Flow<Post> =
-//            client.select()
-//                    .from(Post::class.java)
-//                    .fetch()
-//                    .flow()
-
-    @Query("""
+    @Query(
+        """
         SELECT posts FROM WHERE ID = :id
-    """)
+    """
+    )
     suspend fun findOne(@Param("id") id: Long): Post?
-//            client.select()
-//                    .from(Post::class.java)
-//                    .matching(Criteria.where("id").`is`(id))
-//                    .fetch()
-//                    .awaitOneOrNull()
-//            client.execute("SELECT * FROM posts WHERE id = \$1")
-//                    .bind(0, id)
-//                    .asType<Post>()
-//                    .fetch()
-//                    .awaitOneOrNull()
-
-//    suspend fun deleteById(id: Long): Int =
-//            client.execute("DELETE FROM posts WHERE id = \$1")
-//                    .bind(0, id)
-//                    .fetch()
-//                    .rowsUpdated()
-//                    .awaitSingle()
-
-//    suspend fun deleteAll(): Int =
-//            client.delete()
-//                    .from(Post::class.java)
-//                    .fetch()
-//                    .rowsUpdated()
-//                    .awaitSingle()
-    //client.execute("DELETE FROM posts").fetch().rowsUpdated().awaitSingle()
-
-//    suspend fun save(post: Post) =
-//            client.insert()
-//                    .into(Post::class.java)
-//                    .using(post)
-//                    .map { t, u ->
-//                        //println(t.get("id"))
-//                        t.get("id", Integer::class.java)?.toLong()
-//                    }
-//                    .awaitOne()
 
 
     @Modifying
     @Query("update posts set title = :title, content = :content where id = :id")
     suspend fun update(@Param("title") title: String, @Param("content") content: String): Int
-//    suspend fun update(post: Post): Int =
-//            client.update()
-//                    .table("posts")
-//                    .using(Update.update("title", post.title)
-//                            .set("content", post.content))
-//                    .matching(Criteria.where("id").`is`(post.id!!))
-//                    .fetch()
-//                    .rowsUpdated()
-//                    .awaitSingle()
 
-//            client.execute("UPDATE posts SET title = \$2, content = \$3 WHERE id = \$1")
-//                    .bind(0, post.id!!)
-//                    .bind(1, post.title!!)
-//                    .bind(2, post.content!!)
-//                    .fetch()
-//                    .rowsUpdated()
-//                    .awaitSingle()
-
-//    suspend fun init() {
-//        //client.execute().sql("CREATE TABLE IF NOT EXISTS posts (login varchar PRIMARY KEY, firstname varchar, lastname varchar);").await()
-//        val deletedCount = deleteAll()
-//        println(" $deletedCount posts deleted!")
-//        save(Post(title = "My first post title", content = "Content of my first post"))
-//        save(Post(title = "My second post title", content = "Content of my second post"))
-//    }
 }
 
 
 @Component
-class CommentRepository(private val client: DatabaseClient) {
-    suspend fun save(comment: Comment) =
-            client.insert().into<Comment>().table("comments").using(comment).await()
+interface CommentRepository : CoroutineCrudRepository<Comment, Long> {
 
-    suspend fun countByPostId(postId: Long): Long =
-            client.execute("SELECT COUNT(*) FROM comments WHERE post_id = \$1")
-                    .bind(0, postId)
-                    .asType<Long>()
-                    .fetch()
-                    .awaitOne()
+    @Query(
+        """
+        SELECT COUNT(*) FROM comments WHERE post_id = :postId
+    """
+    )
+    suspend fun countByPostId(@Param("postId") postId: Long): Long
 
-    fun findByPostId(postId: Long): Flow<Comment> =
-            client.execute("SELECT * FROM comments WHERE post_id = \$1")
-                    .bind(0, postId).asType<Comment>()
-                    .fetch()
-                    .flow()
+    @Query(
+        """
+        SELECT * FROM comments WHERE post_id = :postId
+    """
+    )
+    suspend fun findByPostId(@Param("postId") postId: Long): Flow<Comment>
+
 }
 
-
 @Table("comments")
-data class Comment(@Id val id: Long? = null,
-                   @Column("content") val content: String? = null,
-                   @Column("post_id") val postId: Long? = null)
+data class Comment(
+    @Id val id: Long? = null,
+    @Column("content") val content: String? = null,
+    @Column("post_id") val postId: Long? = null
+)
 
 @Table("posts")
-data class Post(@Id val id: Long? = null,
-                @Column("title") val title: String? = null,
-                @Column("content") val content: String? = null
+data class Post(
+    @Id val id: Long? = null,
+    @Column("title") val title: String? = null,
+    @Column("content") val content: String? = null
 )
