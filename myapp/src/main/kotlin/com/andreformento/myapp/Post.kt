@@ -61,7 +61,7 @@ class PostHandler(private val posts: PostRepository) {
         val body = req.awaitBody<Post>()
         return when {
             foundPost != null -> {
-                this.posts.update(title = body.title!!, content = body.content!!)
+                this.posts.update(id = body.id!!, title = body.title!!, content = body.content!!)
                 noContent().buildAndAwait()
             }
             else -> notFound().buildAndAwait()
@@ -81,7 +81,7 @@ interface PostRepository : CoroutineCrudRepository<Post, Long> {
 
     @Query(
         """
-        SELECT posts FROM WHERE ID = :id
+        SELECT * FROM posts WHERE ID = :id
     """
     )
     suspend fun findOne(@Param("id") id: Long): Post?
@@ -89,10 +89,10 @@ interface PostRepository : CoroutineCrudRepository<Post, Long> {
 
     @Modifying
     @Query("update posts set title = :title, content = :content where id = :id")
-    suspend fun update(@Param("title") title: String, @Param("content") content: String): Int
-
+    suspend fun update(@Param("id") id: Long,
+                       @Param("title") title: String,
+                       @Param("content") content: String): Int
 }
-
 
 @Component
 interface CommentRepository : CoroutineCrudRepository<Comment, Long> {

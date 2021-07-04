@@ -29,6 +29,11 @@
 | `/posts` | `POST` | Create a post |
 | `/posts/{id}` | `PUT` | Update a post |
 | `/posts/{id}` | `DELETE` | Delete a post |
+| `/workspaces` | `GET` | Get all workspaces |
+| `/workspaces/{id}` | `GET` | Get one workspace |
+| `/workspaces` | `POST` | Create a workspace |
+| `/workspaces/{id}` | `PUT` | Update a workspace |
+| `/workspaces/{id}` | `DELETE` | Delete a workspace |
 
 ## References
 - https://spring.io/blog/2019/04/12/going-reactive-with-spring-coroutines-and-kotlin-flow
