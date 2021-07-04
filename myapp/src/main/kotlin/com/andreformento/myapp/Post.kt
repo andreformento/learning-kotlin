@@ -20,16 +20,19 @@ import java.net.URI
 class PostRouterConfiguration {
 
     @Bean
-    fun postRoutes(postHandler: PostHandler) = coRouter {
+    fun postRoutes(postHandler: PostHandler, commentHandler: CommentHandler) = coRouter {
         accept(MediaType.APPLICATION_JSON).nest {
             "/posts".nest {
                 GET("", postHandler::all)
-                GET("/{id}", postHandler::get)
                 POST("", postHandler::create)
-                PUT("/{id}", postHandler::update)
-                DELETE("/{id}", postHandler::delete)
-                "/{id}/comments".nest {
-
+                "/{post-id}".nest {
+                    GET("", postHandler::get)
+                    PUT("", postHandler::update)
+                    DELETE("", postHandler::delete)
+                    "/comments".nest {
+                        GET("", commentHandler::getCommentsByPost)
+                        GET("/{comment-id}", commentHandler::getCommentByIdAndPost)
+                    }
                 }
             }
         }
@@ -50,8 +53,8 @@ class PostHandler(private val posts: PostRepository) {
     }
 
     suspend fun get(req: ServerRequest): ServerResponse {
-        println("path variable::${req.pathVariable("id")}")
-        val foundPost = this.posts.findOne(req.pathVariable("id").toLong())
+        println("path variable::${req.pathVariable("post-id")}")
+        val foundPost = this.posts.findOne(req.pathVariable("post-id").toLong())
         println("found post:$foundPost")
         return when {
             foundPost != null -> ok().bodyValueAndAwait(foundPost)
@@ -60,7 +63,7 @@ class PostHandler(private val posts: PostRepository) {
     }
 
     suspend fun update(req: ServerRequest): ServerResponse {
-        val foundPost = this.posts.findOne(req.pathVariable("id").toLong())
+        val foundPost = this.posts.findOne(req.pathVariable("post-id").toLong())
         val body = req.awaitBody<Post>()
         return when {
             foundPost != null -> {
@@ -78,9 +81,27 @@ class PostHandler(private val posts: PostRepository) {
         return noContent().buildAndAwait()
     }
 }
+
 @Component
 class CommentHandler(private val comments: CommentRepository) {
 
+    suspend fun getCommentsByPost(req: ServerRequest): ServerResponse {
+        val postId = req.pathVariable("post-id").toLong()
+        println("get comments by post id $postId")
+        return ok().bodyAndAwait(this.comments.getCommentsByPost(postId))
+    }
+
+    suspend fun getCommentByIdAndPost(req: ServerRequest): ServerResponse {
+        val postId = req.pathVariable("post-id").toLong()
+        val commentId = req.pathVariable("comment-id").toLong()
+        println("get comment id $commentId from post id $postId")
+        val foundEntity = this.comments.getCommentByIdAndPost(postId, commentId)
+        println("found entity:$foundEntity")
+        return when {
+            foundEntity != null -> ok().bodyValueAndAwait(foundEntity)
+            else -> notFound().buildAndAwait()
+        }
+    }
 }
 
 @Component
@@ -96,9 +117,11 @@ interface PostRepository : CoroutineCrudRepository<Post, Long> {
 
     @Modifying
     @Query("update posts set title = :title, content = :content where id = :id")
-    suspend fun update(@Param("id") id: Long,
-                       @Param("title") title: String,
-                       @Param("content") content: String): Int
+    suspend fun update(
+        @Param("id") id: Long,
+        @Param("title") title: String,
+        @Param("content") content: String
+    ): Int
 }
 
 @Component
@@ -116,7 +139,14 @@ interface CommentRepository : CoroutineCrudRepository<Comment, Long> {
         SELECT * FROM comments WHERE post_id = :postId
     """
     )
-    suspend fun findByPostId(@Param("postId") postId: Long): Flow<Comment>
+    suspend fun getCommentsByPost(@Param("postId") postId: Long): Flow<Comment>
+
+    @Query(
+        """
+        SELECT * FROM comments WHERE id = :commentId AND post_id = :postId
+    """
+    )
+    suspend fun getCommentByIdAndPost(@Param("postId") postId: Long, @Param("commentId") commentId: Long): Comment?
 
 }
 
