@@ -25,10 +25,12 @@
 | URI pattern | Method | Description |
 |-------------|--------|-------------|
 | `/posts` | `GET` | Get all posts |
-| `/posts/{id}` | `GET` | Get one post |
 | `/posts` | `POST` | Create a post |
-| `/posts/{id}` | `PUT` | Update a post |
-| `/posts/{id}` | `DELETE` | Delete a post |
+| `/posts/{post-id}` | `GET` | Get one post |
+| `/posts/{post-id}` | `PUT` | Update a post |
+| `/posts/{post-id}` | `DELETE` | Delete a post |
+| `/posts/{post-id}/comments` | `GET` | Comments from a post |
+| `/posts/{post-id}/comments/{comment-id}` | `GET` | A comment from a post |
 | `/workspaces` | `GET` | Get all workspaces |
 | `/workspaces/{id}` | `GET` | Get one workspace |
 | `/workspaces` | `POST` | Create a workspace |
