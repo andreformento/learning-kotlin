@@ -47,3 +47,6 @@
 ## TODO
 - swagger
 - sec
+- log
+- unit test
+- integration test
