@@ -17,10 +17,10 @@ import org.springframework.web.reactive.function.server.ServerResponse.*
 import java.net.URI
 
 @Configuration
-class RouterConfiguration {
+class PostRouterConfiguration {
 
     @Bean
-    fun routes(postHandler: PostHandler) = coRouter {
+    fun postRoutes(postHandler: PostHandler) = coRouter {
         accept(MediaType.APPLICATION_JSON).nest {
             "/posts".nest {
                 GET("", postHandler::all)
@@ -28,6 +28,9 @@ class RouterConfiguration {
                 POST("", postHandler::create)
                 PUT("/{id}", postHandler::update)
                 DELETE("/{id}", postHandler::delete)
+                "/{id}/comments".nest {
+
+                }
             }
         }
     }
@@ -74,6 +77,10 @@ class PostHandler(private val posts: PostRepository) {
         println("$deletedCount posts deleted")
         return noContent().buildAndAwait()
     }
+}
+@Component
+class CommentHandler(private val comments: CommentRepository) {
+
 }
 
 @Component
