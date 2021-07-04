@@ -15,6 +15,8 @@ import org.springframework.stereotype.Component
 import org.springframework.web.reactive.function.server.*
 import org.springframework.web.reactive.function.server.ServerResponse.*
 import java.net.URI
+import org.springdoc.webflux.core.fn.SpringdocRouteBuilder.route
+
 
 @Configuration
 class PostRouterConfiguration {
@@ -24,6 +26,7 @@ class PostRouterConfiguration {
         accept(MediaType.APPLICATION_JSON).nest {
             "/posts".nest {
                 GET("", postHandler::all)
+//                route().GET("/a",postHandler::all, ops -> ops).
                 POST("", postHandler::create)
                 "/{post-id}".nest {
                     GET("", postHandler::get)

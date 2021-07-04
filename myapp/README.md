@@ -57,7 +57,9 @@ Response header `Location` contains the new ID
 - https://hantsy.medium.com/reactive-accessing-rdbms-with-spring-data-r2dbc-d6e453f2837e
 
 ## TODO
-- swagger
+- [open api](https://springdoc.org/features.html)
+  - [example](https://github.com/springdoc/springdoc-openapi/blob/master/springdoc-openapi-webflux-core/src/test/java/test/org/springdoc/api/app90/HelloRouter.java)
+  - [example class](https://github.com/springdoc/springdoc-openapi/blob/master/springdoc-openapi-kotlin/src/test/java/test/org/springdoc/api/AbstractSpringDocTest.java)
 - sec
 - log
 - unit test
