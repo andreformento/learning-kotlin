@@ -65,21 +65,16 @@ class WorkspaceHandler(private val workspaces: WorkspaceRepository) {
     }
 
     suspend fun update(req: ServerRequest): ServerResponse {
-        val foundWorkspace = this.workspaces.findOne(req.pathVariable("id").toUUID())
+        val workspaceId = req.pathVariable("id").toUUID()
         val body = req.awaitBody<Workspace>()
-        return when {
-            foundWorkspace != null -> {
-                this.workspaces.update(id = body.id!!, description = body.description!!)
-                noContent().buildAndAwait()
-            }
-            else -> notFound().buildAndAwait()
-        }
-
+        val updateResult = this.workspaces.update(id = workspaceId, description = body.description!!)
+        println("updateResult -> $updateResult")
+        return noContent().buildAndAwait()
     }
 
     suspend fun delete(req: ServerRequest): ServerResponse {
         val deletedCount = this.workspaces.deleteById(req.pathVariable("id").toUUID())
-        println("$deletedCount posts deleted")
+        println("$deletedCount workspaces deleted")
         return noContent().buildAndAwait()
     }
 }
@@ -96,7 +91,7 @@ interface WorkspaceRepository : CoroutineCrudRepository<Workspace, UUID> {
 
 
     @Modifying
-    @Query("update posts set description = :description where id = :id")
+    @Query("update workspace set description = :description where id = :id")
     suspend fun update(
         @Param("id") id: UUID,
         @Param("description") description: String

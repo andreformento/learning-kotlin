@@ -63,16 +63,11 @@ class PostHandler(private val posts: PostRepository) {
     }
 
     suspend fun update(req: ServerRequest): ServerResponse {
-        val foundPost = this.posts.findOne(req.pathVariable("post-id").toLong())
+        val postId = req.pathVariable("post-id").toLong()
         val body = req.awaitBody<Post>()
-        return when {
-            foundPost != null -> {
-                this.posts.update(id = body.id!!, title = body.title!!, content = body.content!!)
-                noContent().buildAndAwait()
-            }
-            else -> notFound().buildAndAwait()
-        }
-
+        val updateResult = this.posts.update(id = postId, title = body.title!!, content = body.content!!)
+        println("updateResult -> $updateResult")
+        return noContent().buildAndAwait()
     }
 
     suspend fun delete(req: ServerRequest): ServerResponse {
