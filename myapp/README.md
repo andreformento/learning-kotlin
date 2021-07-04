@@ -63,3 +63,4 @@ Response header `Location` contains the new ID
 - unit test
 - integration test
 - docker
+- hex? entity, request, response, model
