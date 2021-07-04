@@ -24,10 +24,12 @@ class WorkspaceRouterConfiguration {
         accept(MediaType.APPLICATION_JSON).nest {
             "/workspaces".nest {
                 GET("", workspaceHandler::all)
-                GET("/{id}", workspaceHandler::get)
                 POST("", workspaceHandler::create)
-                PUT("/{id}", workspaceHandler::update)
-                DELETE("/{id}", workspaceHandler::delete)
+                "/{id}".nest {
+                    GET("", workspaceHandler::get)
+                    PUT("", workspaceHandler::update)
+                    DELETE("", workspaceHandler::delete)
+                }
             }
         }
     }
@@ -46,8 +48,10 @@ class WorkspaceHandler(private val workspaces: WorkspaceRepository) {
 
     suspend fun create(req: ServerRequest): ServerResponse {
         val body = req.awaitBody<Workspace>()
+        println("body -> $body")
         val createdWorkspace = this.workspaces.save(body)
-        return created(URI.create("/workspaces/$createdWorkspace")).buildAndAwait()
+        println("createdWorkspace -> $createdWorkspace")
+        return created(URI.create("/workspaces/${createdWorkspace.id}")).buildAndAwait()
     }
 
     suspend fun get(req: ServerRequest): ServerResponse {

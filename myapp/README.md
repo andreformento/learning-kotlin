@@ -37,6 +37,16 @@
 | `/workspaces/{id}` | `PUT` | Update a workspace |
 | `/workspaces/{id}` | `DELETE` | Delete a workspace |
 
+### Terminal example
+
+```shell
+curl -v -X POST 'http://localhost:8080/workspaces' \
+  -H 'Content-Type: application/json' \
+  --data-raw '{"description":"a new workspace"}'
+```
+
+Response header `Location` contains the new ID
+
 ## References
 - https://spring.io/blog/2019/04/12/going-reactive-with-spring-coroutines-and-kotlin-flow
 - https://github.com/hantsy/spring-kotlin-coroutines-sample/blob/master/data-r2dbc-fn/src/main/kotlin/com/example/demo/DemoApplication.kt

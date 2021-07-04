@@ -49,7 +49,7 @@ class PostHandler(private val posts: PostRepository) {
     suspend fun create(req: ServerRequest): ServerResponse {
         val body = req.awaitBody<Post>()
         val createdPost = this.posts.save(body)
-        return created(URI.create("/posts/$createdPost")).buildAndAwait()
+        return created(URI.create("/posts/${createdPost.id}")).buildAndAwait()
     }
 
     suspend fun get(req: ServerRequest): ServerResponse {
