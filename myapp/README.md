@@ -31,18 +31,13 @@
 | `/posts/{post-id}` | `DELETE` | Delete a post |
 | `/posts/{post-id}/comments` | `GET` | Comments from a post |
 | `/posts/{post-id}/comments/{comment-id}` | `GET` | A comment from a post |
-| `/workspaces` | `GET` | Get all workspaces |
-| `/workspaces/{id}` | `GET` | Get one workspace |
-| `/workspaces` | `POST` | Create a workspace |
-| `/workspaces/{id}` | `PUT` | Update a workspace |
-| `/workspaces/{id}` | `DELETE` | Delete a workspace |
 
 ### Terminal example
 
 ```shell
-curl -v -X POST 'http://localhost:8080/workspaces' \
+curl -v -X POST 'http://localhost:8080/posts' \
   -H 'Content-Type: application/json' \
-  --data-raw '{"description":"a new workspace"}'
+  --data-raw '{"title":"a new post", "content":"Blablabla"}'
 ```
 
 Response header `Location` contains the new ID
@@ -55,6 +50,7 @@ Response header `Location` contains the new ID
 - https://github.com/hantsy/spring-kotlin-coroutines-sample
 - https://docs.spring.io/spring-data/r2dbc/docs/current/reference/html
 - https://hantsy.medium.com/reactive-accessing-rdbms-with-spring-data-r2dbc-d6e453f2837e
+- https://docs.spring.io/spring-framework/docs/current/reference/html/languages.html
 
 ## TODO
 - [open api](https://springdoc.org/features.html)
