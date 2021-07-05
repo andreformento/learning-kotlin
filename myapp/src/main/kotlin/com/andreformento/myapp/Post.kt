@@ -15,8 +15,7 @@ import org.springframework.stereotype.Component
 import org.springframework.web.reactive.function.server.*
 import org.springframework.web.reactive.function.server.ServerResponse.*
 import java.net.URI
-import org.springdoc.webflux.core.fn.SpringdocRouteBuilder.route
-
+import java.util.*
 
 @Configuration
 class PostRouterConfiguration {
@@ -26,7 +25,6 @@ class PostRouterConfiguration {
         accept(MediaType.APPLICATION_JSON).nest {
             "/posts".nest {
                 GET("", postHandler::all)
-//                route().GET("/a",postHandler::all, ops -> ops).
                 POST("", postHandler::create)
                 "/{post-id}".nest {
                     GET("", postHandler::get)
@@ -45,6 +43,10 @@ class PostRouterConfiguration {
 @Component
 class PostHandler(private val posts: PostRepository) {
 
+    fun Any.toUUID(): UUID {
+        return UUID.fromString(this.toString())
+    }
+
     suspend fun all(req: ServerRequest): ServerResponse {
         return ok().bodyAndAwait(this.posts.findAll())
     }
@@ -57,7 +59,7 @@ class PostHandler(private val posts: PostRepository) {
 
     suspend fun get(req: ServerRequest): ServerResponse {
         println("path variable::${req.pathVariable("post-id")}")
-        val foundPost = this.posts.findOne(req.pathVariable("post-id").toLong())
+        val foundPost = this.posts.findOne(req.pathVariable("post-id").toUUID())
         println("found post:$foundPost")
         return when {
             foundPost != null -> ok().bodyValueAndAwait(foundPost)
@@ -66,7 +68,7 @@ class PostHandler(private val posts: PostRepository) {
     }
 
     suspend fun update(req: ServerRequest): ServerResponse {
-        val postId = req.pathVariable("post-id").toLong()
+        val postId = req.pathVariable("post-id").toUUID()
         val body = req.awaitBody<Post>()
         val updateResult = this.posts.update(id = postId, title = body.title!!, content = body.content!!)
         println("updateResult -> $updateResult")
@@ -74,7 +76,7 @@ class PostHandler(private val posts: PostRepository) {
     }
 
     suspend fun delete(req: ServerRequest): ServerResponse {
-        val deletedCount = this.posts.deleteById(req.pathVariable("id").toLong())
+        val deletedCount = this.posts.deleteById(req.pathVariable("id").toUUID())
         println("$deletedCount posts deleted")
         return noContent().buildAndAwait()
     }
@@ -83,15 +85,19 @@ class PostHandler(private val posts: PostRepository) {
 @Component
 class CommentHandler(private val comments: CommentRepository) {
 
+    fun Any.toUUID(): UUID {
+        return UUID.fromString(this.toString())
+    }
+
     suspend fun getCommentsByPost(req: ServerRequest): ServerResponse {
-        val postId = req.pathVariable("post-id").toLong()
+        val postId = req.pathVariable("post-id").toUUID()
         println("get comments by post id $postId")
         return ok().bodyAndAwait(this.comments.getCommentsByPost(postId))
     }
 
     suspend fun getCommentByIdAndPost(req: ServerRequest): ServerResponse {
-        val postId = req.pathVariable("post-id").toLong()
-        val commentId = req.pathVariable("comment-id").toLong()
+        val postId = req.pathVariable("post-id").toUUID()
+        val commentId = req.pathVariable("comment-id").toUUID()
         println("get comment id $commentId from post id $postId")
         val foundEntity = this.comments.getCommentByIdAndPost(postId, commentId)
         println("found entity:$foundEntity")
@@ -103,61 +109,61 @@ class CommentHandler(private val comments: CommentRepository) {
 }
 
 @Component
-interface PostRepository : CoroutineCrudRepository<Post, Long> {
+interface PostRepository : CoroutineCrudRepository<Post, UUID> {
 
     @Query(
         """
-        SELECT * FROM posts WHERE ID = :id
+        SELECT * FROM post WHERE ID = :id
     """
     )
-    suspend fun findOne(@Param("id") id: Long): Post?
+    suspend fun findOne(@Param("id") id: UUID): Post?
 
 
     @Modifying
-    @Query("update posts set title = :title, content = :content where id = :id")
+    @Query("update post set title = :title, content = :content where id = :id")
     suspend fun update(
-        @Param("id") id: Long,
+        @Param("id") id: UUID,
         @Param("title") title: String,
         @Param("content") content: String
     ): Int
 }
 
 @Component
-interface CommentRepository : CoroutineCrudRepository<Comment, Long> {
+interface CommentRepository : CoroutineCrudRepository<Comment, UUID> {
 
     @Query(
         """
-        SELECT COUNT(*) FROM comments WHERE post_id = :postId
+        SELECT COUNT(*) FROM comment WHERE post_id = :postId
     """
     )
-    suspend fun countByPostId(@Param("postId") postId: Long): Long
+    suspend fun countByPostId(@Param("postId") postId: UUID): UUID
 
     @Query(
         """
-        SELECT * FROM comments WHERE post_id = :postId
+        SELECT * FROM comment WHERE post_id = :postId
     """
     )
-    suspend fun getCommentsByPost(@Param("postId") postId: Long): Flow<Comment>
+    suspend fun getCommentsByPost(@Param("postId") postId: UUID): Flow<Comment>
 
     @Query(
         """
-        SELECT * FROM comments WHERE id = :commentId AND post_id = :postId
+        SELECT * FROM comment WHERE id = :commentId AND post_id = :postId
     """
     )
-    suspend fun getCommentByIdAndPost(@Param("postId") postId: Long, @Param("commentId") commentId: Long): Comment?
+    suspend fun getCommentByIdAndPost(@Param("postId") postId: UUID, @Param("commentId") commentId: UUID): Comment?
 
 }
 
-@Table("comments")
+@Table("comment")
 data class Comment(
-    @Id val id: Long? = null,
+    @Id val id: UUID? = null,
     @Column("content") val content: String? = null,
-    @Column("post_id") val postId: Long? = null
+    @Column("post_id") val postId: UUID? = null
 )
 
-@Table("posts")
+@Table("post")
 data class Post(
-    @Id val id: Long? = null,
+    @Id val id: UUID? = null,
     @Column("title") val title: String? = null,
     @Column("content") val content: String? = null
 )
