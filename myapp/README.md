@@ -61,3 +61,5 @@ Response header `Location` contains the new ID
 - integration test
 - docker
 - hex? entity, request, response, model
+- wait-for
+- kubernetes (Helm) deployments
