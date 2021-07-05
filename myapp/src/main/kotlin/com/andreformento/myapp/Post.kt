@@ -12,10 +12,28 @@ import org.springframework.data.repository.kotlin.CoroutineCrudRepository
 import org.springframework.data.repository.query.Param
 import org.springframework.http.MediaType
 import org.springframework.stereotype.Component
+import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.reactive.function.server.*
 import org.springframework.web.reactive.function.server.ServerResponse.*
 import java.net.URI
 import java.util.*
+
+@RestController
+@RequestMapping("posts")
+class PostController(private val posts: PostRepository) {
+
+    fun Any.toUUID(): UUID {
+        return UUID.fromString(this.toString())
+    }
+
+    @GetMapping
+    suspend fun all(): Flow<Post> {
+        return this.posts.findAll()
+    }
+
+}
 
 @Configuration
 class PostRouterConfiguration {
@@ -24,7 +42,6 @@ class PostRouterConfiguration {
     fun postRoutes(postHandler: PostHandler, commentHandler: CommentHandler) = coRouter {
         accept(MediaType.APPLICATION_JSON).nest {
             "/posts".nest {
-                GET("", postHandler::all)
                 POST("", postHandler::create)
                 "/{post-id}".nest {
                     GET("", postHandler::get)
@@ -45,10 +62,6 @@ class PostHandler(private val posts: PostRepository) {
 
     fun Any.toUUID(): UUID {
         return UUID.fromString(this.toString())
-    }
-
-    suspend fun all(req: ServerRequest): ServerResponse {
-        return ok().bodyAndAwait(this.posts.findAll())
     }
 
     suspend fun create(req: ServerRequest): ServerResponse {

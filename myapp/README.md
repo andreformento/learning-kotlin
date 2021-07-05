@@ -50,7 +50,7 @@ Response header `Location` contains the new ID
 - https://github.com/hantsy/spring-kotlin-coroutines-sample
 - https://docs.spring.io/spring-data/r2dbc/docs/current/reference/html
 - https://hantsy.medium.com/reactive-accessing-rdbms-with-spring-data-r2dbc-d6e453f2837e
-- https://docs.spring.io/spring-framework/docs/current/reference/html/languages.html
+- https://docs.spring.io/spring-framework/docs/current/reference/html/languages.html#controllers
 
 ## TODO
 - [open api](https://springdoc.org/features.html)
