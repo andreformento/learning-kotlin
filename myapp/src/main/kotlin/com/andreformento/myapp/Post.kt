@@ -68,13 +68,8 @@ class PostController(private val posts: PostRepository) {
 @Component
 interface PostRepository : CoroutineCrudRepository<Post, UUID> {
 
-    @Query(
-        """
-        SELECT * FROM post WHERE ID = :id
-    """
-    )
+    @Query("SELECT * FROM post WHERE ID = :id")
     suspend fun findOne(@Param("id") id: UUID): Post?
-
 
     @Modifying
     @Query("update post set title = :title, content = :content where id = :id")
@@ -84,7 +79,6 @@ interface PostRepository : CoroutineCrudRepository<Post, UUID> {
         @Param("content") content: String
     ): Int
 }
-
 
 @Table("post")
 data class Post(
