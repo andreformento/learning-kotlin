@@ -44,7 +44,7 @@ class CommentController(private val comments: CommentRepository) {
 interface CommentRepository : CoroutineCrudRepository<Comment, UUID> {
 
     @Query("SELECT COUNT(*) FROM comment WHERE post_id = :postId")
-    suspend fun countByPostId(@Param("postId") postId: UUID): UUID
+    suspend fun countByPostId(@Param("postId") postId: UUID): Long
 
     @Query("SELECT * FROM comment WHERE post_id = :postId")
     suspend fun getCommentsByPost(@Param("postId") postId: UUID): Flow<Comment>
