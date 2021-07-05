@@ -1,8 +1,6 @@
 package com.andreformento.myapp
 
 import kotlinx.coroutines.flow.Flow
-import org.springframework.context.annotation.Bean
-import org.springframework.context.annotation.Configuration
 import org.springframework.data.annotation.Id
 import org.springframework.data.r2dbc.repository.Modifying
 import org.springframework.data.r2dbc.repository.Query
@@ -10,114 +8,68 @@ import org.springframework.data.relational.core.mapping.Column
 import org.springframework.data.relational.core.mapping.Table
 import org.springframework.data.repository.kotlin.CoroutineCrudRepository
 import org.springframework.data.repository.query.Param
-import org.springframework.http.MediaType
+import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Component
-import org.springframework.web.reactive.function.server.*
-import org.springframework.web.reactive.function.server.ServerResponse.*
+import org.springframework.web.bind.annotation.*
 import java.net.URI
 import java.util.*
 
-@Configuration
-class PostRouterConfiguration {
+@RestController
+@RequestMapping("/posts", produces = ["application/json"])
+class PostController(private val posts: PostRepository) {
 
-    @Bean
-    fun postRoutes(postHandler: PostHandler, commentHandler: CommentHandler) = coRouter {
-        accept(MediaType.APPLICATION_JSON).nest {
-            "/posts".nest {
-                GET("", postHandler::all)
-                POST("", postHandler::create)
-                "/{post-id}".nest {
-                    GET("", postHandler::get)
-                    PUT("", postHandler::update)
-                    DELETE("", postHandler::delete)
-                    "/comments".nest {
-                        GET("", commentHandler::getCommentsByPost)
-                        GET("/{comment-id}", commentHandler::getCommentByIdAndPost)
-                    }
-                }
-            }
-        }
-    }
-}
-
-@Component
-class PostHandler(private val posts: PostRepository) {
-
-    fun Any.toUUID(): UUID {
-        return UUID.fromString(this.toString())
+    fun String.toUUID(): UUID {
+        return UUID.fromString(this)
     }
 
-    suspend fun all(req: ServerRequest): ServerResponse {
-        return ok().bodyAndAwait(this.posts.findAll())
+    @GetMapping
+    suspend fun all(): Flow<Post> {
+        return this.posts.findAll()
     }
 
-    suspend fun create(req: ServerRequest): ServerResponse {
-        val body = req.awaitBody<Post>()
-        val createdPost = this.posts.save(body)
-        return created(URI.create("/posts/${createdPost.id}")).buildAndAwait()
+    @PostMapping
+    suspend fun create(
+        @RequestBody post: Post
+    ): ResponseEntity<Post> {
+        val createdPost = this.posts.save(post)
+        return ResponseEntity.created(URI.create("/posts/${createdPost.id}")).body(createdPost)
     }
 
-    suspend fun get(req: ServerRequest): ServerResponse {
-        println("path variable::${req.pathVariable("post-id")}")
-        val foundPost = this.posts.findOne(req.pathVariable("post-id").toUUID())
+    @GetMapping("/{post-id}")
+    suspend fun get(@PathVariable("post-id") postId: String): ResponseEntity<Post> {
+        println("path variable::$postId")
+        val foundPost = this.posts.findOne(postId.toUUID())
         println("found post:$foundPost")
         return when {
-            foundPost != null -> ok().bodyValueAndAwait(foundPost)
-            else -> notFound().buildAndAwait()
+            foundPost != null -> ResponseEntity.ok(foundPost)
+            else -> ResponseEntity.notFound().build()
         }
     }
 
-    suspend fun update(req: ServerRequest): ServerResponse {
-        val postId = req.pathVariable("post-id").toUUID()
-        val body = req.awaitBody<Post>()
-        val updateResult = this.posts.update(id = postId, title = body.title!!, content = body.content!!)
+    @PutMapping("/{post-id}")
+    suspend fun update(
+        @PathVariable("post-id") postId: String,
+        @RequestBody post: Post
+    ): ResponseEntity<Any> {
+        val updateResult = this.posts.update(id = postId.toUUID(), title = post.title!!, content = post.content!!)
         println("updateResult -> $updateResult")
-        return noContent().buildAndAwait()
+        return ResponseEntity.noContent().build()
     }
 
-    suspend fun delete(req: ServerRequest): ServerResponse {
-        val deletedCount = this.posts.deleteById(req.pathVariable("id").toUUID())
+    @DeleteMapping("/{post-id}")
+    suspend fun delete(@PathVariable("post-id") postId: String): ResponseEntity<Any> {
+        val deletedCount = this.posts.deleteById(postId.toUUID())
         println("$deletedCount posts deleted")
-        return noContent().buildAndAwait()
-    }
-}
-
-@Component
-class CommentHandler(private val comments: CommentRepository) {
-
-    fun Any.toUUID(): UUID {
-        return UUID.fromString(this.toString())
+        return ResponseEntity.noContent().build()
     }
 
-    suspend fun getCommentsByPost(req: ServerRequest): ServerResponse {
-        val postId = req.pathVariable("post-id").toUUID()
-        println("get comments by post id $postId")
-        return ok().bodyAndAwait(this.comments.getCommentsByPost(postId))
-    }
-
-    suspend fun getCommentByIdAndPost(req: ServerRequest): ServerResponse {
-        val postId = req.pathVariable("post-id").toUUID()
-        val commentId = req.pathVariable("comment-id").toUUID()
-        println("get comment id $commentId from post id $postId")
-        val foundEntity = this.comments.getCommentByIdAndPost(postId, commentId)
-        println("found entity:$foundEntity")
-        return when {
-            foundEntity != null -> ok().bodyValueAndAwait(foundEntity)
-            else -> notFound().buildAndAwait()
-        }
-    }
 }
 
 @Component
 interface PostRepository : CoroutineCrudRepository<Post, UUID> {
 
-    @Query(
-        """
-        SELECT * FROM post WHERE ID = :id
-    """
-    )
+    @Query("SELECT * FROM post WHERE ID = :id")
     suspend fun findOne(@Param("id") id: UUID): Post?
-
 
     @Modifying
     @Query("update post set title = :title, content = :content where id = :id")
@@ -127,39 +79,6 @@ interface PostRepository : CoroutineCrudRepository<Post, UUID> {
         @Param("content") content: String
     ): Int
 }
-
-@Component
-interface CommentRepository : CoroutineCrudRepository<Comment, UUID> {
-
-    @Query(
-        """
-        SELECT COUNT(*) FROM comment WHERE post_id = :postId
-    """
-    )
-    suspend fun countByPostId(@Param("postId") postId: UUID): UUID
-
-    @Query(
-        """
-        SELECT * FROM comment WHERE post_id = :postId
-    """
-    )
-    suspend fun getCommentsByPost(@Param("postId") postId: UUID): Flow<Comment>
-
-    @Query(
-        """
-        SELECT * FROM comment WHERE id = :commentId AND post_id = :postId
-    """
-    )
-    suspend fun getCommentByIdAndPost(@Param("postId") postId: UUID, @Param("commentId") commentId: UUID): Comment?
-
-}
-
-@Table("comment")
-data class Comment(
-    @Id val id: UUID? = null,
-    @Column("content") val content: String? = null,
-    @Column("post_id") val postId: UUID? = null
-)
 
 @Table("post")
 data class Post(
