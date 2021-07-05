@@ -22,6 +22,8 @@
 
 ## API
 
+http://localhost:8080/docs-ui
+
 | URI pattern | Method | Description |
 |-------------|--------|-------------|
 | `/posts` | `GET` | Get all posts |
@@ -53,9 +55,6 @@ Response header `Location` contains the new ID
 - https://docs.spring.io/spring-framework/docs/current/reference/html/languages.html#controllers
 
 ## TODO
-- [open api](https://springdoc.org/features.html)
-  - [example](https://github.com/springdoc/springdoc-openapi/blob/master/springdoc-openapi-webflux-core/src/test/java/test/org/springdoc/api/app90/HelloRouter.java)
-  - [example class](https://github.com/springdoc/springdoc-openapi/blob/master/springdoc-openapi-kotlin/src/test/java/test/org/springdoc/api/AbstractSpringDocTest.java)
 - sec
 - log
 - unit test
