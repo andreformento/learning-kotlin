@@ -24,7 +24,7 @@ class PostService(private val posts: Posts) {
 
     suspend fun update(postId: UUID, post: Post): Int {
         // TODO authorization
-        return posts.update(id = postId, title = post.title!!, content = post.content!!)
+        return posts.update(Post(postId, post.title, post.content))
     }
 
     suspend fun delete(postId: UUID) {
