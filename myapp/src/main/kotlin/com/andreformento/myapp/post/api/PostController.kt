@@ -1,20 +1,17 @@
 package com.andreformento.myapp.post.api
 
 import com.andreformento.myapp.post.Post
+import com.andreformento.myapp.post.PostCreation
 import com.andreformento.myapp.post.PostService
+import com.andreformento.myapp.post.toPostId
 import kotlinx.coroutines.flow.Flow
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import java.net.URI
-import java.util.*
 
 @RestController
 @RequestMapping("/posts", produces = ["application/json"])
 class PostController(private val postService: PostService) {
-
-    fun String.toUUID(): UUID {
-        return UUID.fromString(this)
-    }
 
     @GetMapping
     suspend fun all(): Flow<Post> {
@@ -22,15 +19,15 @@ class PostController(private val postService: PostService) {
     }
 
     @PostMapping
-    suspend fun create(@RequestBody post: Post): ResponseEntity<Post> {
-        val createdPost = postService.create(post)
+    suspend fun create(@RequestBody postCreation: PostCreation): ResponseEntity<Post> {
+        val createdPost = postService.create(postCreation)
         return ResponseEntity.created(URI.create("/posts/${createdPost.id}")).body(createdPost)
     }
 
     @GetMapping("/{post-id}")
     suspend fun getById(@PathVariable("post-id") postId: String): ResponseEntity<Post> {
         println("path variable::$postId")
-        val foundPost = postService.getById(postId.toUUID())
+        val foundPost = postService.getById(postId.toPostId())
         println("found post:$foundPost")
         return when {
             foundPost != null -> ResponseEntity.ok(foundPost)
@@ -43,14 +40,14 @@ class PostController(private val postService: PostService) {
         @PathVariable("post-id") postId: String,
         @RequestBody post: Post
     ): ResponseEntity<Any> {
-        val updateResult = postService.update(postId = postId.toUUID(), post = post)
+        val updateResult = postService.update(postId = postId.toPostId(), post = post)
         println("updateResult -> $updateResult")
         return ResponseEntity.noContent().build()
     }
 
     @DeleteMapping("/{post-id}")
     suspend fun delete(@PathVariable("post-id") postId: String): ResponseEntity<Any> {
-        val deletedCount = postService.delete(postId.toUUID())
+        val deletedCount = postService.delete(postId.toPostId())
         println("$deletedCount posts deleted")
         return ResponseEntity.noContent().build()
     }
