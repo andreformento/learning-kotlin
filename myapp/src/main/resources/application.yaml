@@ -10,4 +10,4 @@ management:
   endpoints.web.exposure.include: "health,prometheus"
   endpoint.health.group:
     liveness.include: "ping,health"
-    readiness.include: "ping,health"
+    readiness.include: "postgres"
