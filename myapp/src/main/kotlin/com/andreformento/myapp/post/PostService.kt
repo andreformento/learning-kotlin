@@ -3,7 +3,6 @@ package com.andreformento.myapp.post
 import com.andreformento.myapp.post.repository.Posts
 import kotlinx.coroutines.flow.Flow
 import org.springframework.stereotype.Service
-import java.util.*
 
 @Service
 class PostService(private val posts: Posts) {
@@ -12,22 +11,22 @@ class PostService(private val posts: Posts) {
         return posts.findAll()
     }
 
-    suspend fun create(post: Post): Post {
+    suspend fun create(postCreation: PostCreation): Post {
         // TODO authorization
-        return posts.save(post)
+        return posts.save(postCreation)
     }
 
-    suspend fun getById(postId: UUID): Post? {
+    suspend fun getById(postId: PostId): Post? {
         // TODO authorization
         return posts.findOne(postId)
     }
 
-    suspend fun update(postId: UUID, post: Post): Int {
+    suspend fun update(postId: PostId, post: Post): Int {
         // TODO authorization
         return posts.update(Post(postId, post.title, post.content))
     }
 
-    suspend fun delete(postId: UUID) {
+    suspend fun delete(postId: PostId) {
         // TODO delete comments too
         // TODO only hide
         return posts.deleteById(postId)
