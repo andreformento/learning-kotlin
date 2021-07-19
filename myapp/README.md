@@ -22,7 +22,11 @@
 
 ## API
 
-http://localhost:8080/docs-ui
+- http://localhost:8080/docs-ui
+- http://localhost:8080/actuator/health
+- http://localhost:8080/actuator/health/liveness
+- http://localhost:8080/actuator/health/readiness
+- http://localhost:8080/actuator/prometheus
 
 | URI pattern | Method | Description |
 |-------------|--------|-------------|
@@ -53,6 +57,8 @@ Response header `Location` contains the new ID
 - https://docs.spring.io/spring-data/r2dbc/docs/current/reference/html
 - https://hantsy.medium.com/reactive-accessing-rdbms-with-spring-data-r2dbc-d6e453f2837e
 - https://docs.spring.io/spring-framework/docs/current/reference/html/languages.html#controllers
+- https://www.baeldung.com/micrometer
+- https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#actuator.metrics.export.prometheus
 
 ## TODO
 - sec
