@@ -69,3 +69,4 @@ Response header `Location` contains the new ID
 - hex? entity, request, response, model
 - wait-for
 - kubernetes (Helm) deployments
+- Spring Boot DevTools
