@@ -12,6 +12,8 @@ import org.springframework.stereotype.Component
 @Component
 class PostgresHealthIndicator(private val posts: Posts) : HealthIndicator {
     // TODO this is the best way? I hope not!
+    // https://www.baeldung.com/spring-boot-health-indicators
+    // https://docs.spring.io/spring-boot/docs/current/api/org/springframework/boot/actuate/health/ReactiveHealthIndicator.html
     override fun health(): Health {
         return try {
             var firstPost: Post?
