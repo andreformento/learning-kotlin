@@ -1,8 +1,8 @@
 package com.andreformento.money.user.repository
 
-import User
+import com.andreformento.money.user.User
 import com.andreformento.money.user.UserCreation
-import UserId
+import com.andreformento.money.user.UserId
 import org.springframework.data.annotation.Id
 import org.springframework.data.relational.core.mapping.Column
 import org.springframework.data.relational.core.mapping.Table

@@ -1,9 +1,9 @@
 package com.andreformento.money.user.api
 
-import User
+import com.andreformento.money.user.User
 import com.andreformento.money.user.UserCreation
 import com.andreformento.money.user.UserService
-import toUserId
+import com.andreformento.money.user.toUserId
 import kotlinx.coroutines.flow.Flow
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*

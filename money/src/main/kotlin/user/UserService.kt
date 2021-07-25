@@ -1,7 +1,5 @@
 package com.andreformento.money.user
 
-import User
-import UserId
 import com.andreformento.money.user.repository.Users
 import kotlinx.coroutines.flow.Flow
 import org.springframework.stereotype.Service

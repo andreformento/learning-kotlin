@@ -1,6 +1,6 @@
 package com.andreformento.money.user.repository
 
-import UserId
+import com.andreformento.money.user.UserId
 import org.springframework.data.r2dbc.repository.Modifying
 import org.springframework.data.r2dbc.repository.Query
 import org.springframework.data.repository.kotlin.CoroutineCrudRepository

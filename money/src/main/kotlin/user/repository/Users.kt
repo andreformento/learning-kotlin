@@ -1,8 +1,8 @@
 package com.andreformento.money.user.repository
 
-import User
-import UserId
+import com.andreformento.money.user.User
 import com.andreformento.money.user.UserCreation
+import com.andreformento.money.user.UserId
 import com.andreformento.money.user.repository.UserEntity
 import com.andreformento.money.user.repository.UserRepository
 import kotlinx.coroutines.flow.Flow

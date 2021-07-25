@@ -1,3 +1,4 @@
+package com.andreformento.money.user
 
 import java.util.*
 
