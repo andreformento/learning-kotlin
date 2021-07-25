@@ -63,7 +63,7 @@ Response header `Location` contains the new ID
 ## TODO
 - sec
 - log
-- unit test (Kotest + mockk)
+- unit test [Kotest](https://kotest.io/) + [Mockk](https://mockk.io/)
 - integration test
 - docker
 - hex? entity, request, response, model
