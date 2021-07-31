@@ -13,3 +13,8 @@ data class Organization(
     val name: String,
     val description: String
 )
+
+data class OrganizationCreation(
+    val name: String,
+    val description: String
+)

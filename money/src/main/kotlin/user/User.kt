@@ -13,3 +13,8 @@ data class User(
     val name: String,
     val email: String
 )
+
+data class UserCreation(
+    val name: String,
+    val email: String
+)

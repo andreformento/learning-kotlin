@@ -3,8 +3,6 @@ package com.andreformento.money.organization.repository
 import com.andreformento.money.organization.Organization
 import com.andreformento.money.organization.OrganizationCreation
 import com.andreformento.money.organization.OrganizationId
-import com.andreformento.money.organization.repository.OrganizationEntity
-import com.andreformento.money.organization.repository.OrganizationRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import org.springframework.stereotype.Repository
