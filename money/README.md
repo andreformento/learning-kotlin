@@ -64,3 +64,4 @@ Response header `Location` contains the new ID
 - hex? entity, request, response, model
 - kubernetes (Helm) deployments
 - Spring Boot DevTools
+- code formater [spotless](https://github.com/diffplug/spotless)
