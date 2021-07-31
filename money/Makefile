@@ -9,5 +9,8 @@ database:
 	            -v $$(pwd)/migrations/:/docker-entrypoint-initdb.d/:ro \
 	            postgres:13.3
 
-run:
+wait-for-database:
+	@until docker run -it -e PGPASSWORD=password --rm --link database:pg postgres:13.3 psql -U user -h pg -c "select 1" -d mydb; do sleep 0.5; done
+
+run: database wait-for-database
 	@./gradlew bootRun

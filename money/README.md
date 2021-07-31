@@ -10,11 +10,6 @@
 
 ## Run
 
-- Create database _(Postgres)_
-  ```shell
-  make database
-  ```
-
 - Run app 
   ```shell
   make run
@@ -67,6 +62,5 @@ Response header `Location` contains the new ID
 - integration test
 - docker
 - hex? entity, request, response, model
-- wait-for
 - kubernetes (Helm) deployments
 - Spring Boot DevTools
