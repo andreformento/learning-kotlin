@@ -2,7 +2,7 @@ package com.andreformento.money.user.api
 
 import com.andreformento.money.user.User
 import com.andreformento.money.user.UserCreation
-import com.andreformento.money.user.UserService
+import com.andreformento.money.user.UserFacade
 import com.andreformento.money.user.toUserId
 import kotlinx.coroutines.flow.Flow
 import org.springframework.http.ResponseEntity
@@ -11,23 +11,23 @@ import java.net.URI
 
 @RestController
 @RequestMapping("/users", produces = ["application/json"])
-class UserController(private val userService: UserService) {
+class UserController(private val userFacade: UserFacade) {
 
     @GetMapping
     suspend fun all(): Flow<User> {
-        return userService.all()
+        return userFacade.all()
     }
 
     @PostMapping
     suspend fun create(@RequestBody userCreation: UserCreation): ResponseEntity<User> {
-        val createdUser = userService.create(userCreation)
+        val createdUser = userFacade.create(userCreation)
         return ResponseEntity.created(URI.create("/users/${createdUser.id}")).body(createdUser)
     }
 
     @GetMapping("/{user-id}")
     suspend fun getById(@PathVariable("user-id") userId: String): ResponseEntity<User> {
         println("path variable::$userId")
-        val foundUser = userService.getById(userId.toUserId())
+        val foundUser = userFacade.getById(userId.toUserId())
         println("found user:$foundUser")
         return when {
             foundUser != null -> ResponseEntity.ok(foundUser)
@@ -40,14 +40,14 @@ class UserController(private val userService: UserService) {
         @PathVariable("user-id") userId: String,
         @RequestBody user: User
     ): ResponseEntity<Any> {
-        val updateResult = userService.update(userId = userId.toUserId(), user = user)
+        val updateResult = userFacade.update(userId = userId.toUserId(), user = user)
         println("updateResult -> $updateResult")
         return ResponseEntity.noContent().build()
     }
 
     @DeleteMapping("/{user-id}")
     suspend fun delete(@PathVariable("user-id") userId: String): ResponseEntity<Any> {
-        val deletedCount = userService.delete(userId.toUserId())
+        val deletedCount = userFacade.delete(userId.toUserId())
         println("$deletedCount users deleted")
         return ResponseEntity.noContent().build()
     }

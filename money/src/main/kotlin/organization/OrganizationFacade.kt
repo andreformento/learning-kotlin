@@ -5,7 +5,7 @@ import kotlinx.coroutines.flow.Flow
 import org.springframework.stereotype.Service
 
 @Service
-class OrganizationService(private val organizations: Organizations) {
+class OrganizationFacade(private val organizations: Organizations) {
 
     suspend fun all(): Flow<Organization> {
         return organizations.findAll()
@@ -27,7 +27,6 @@ class OrganizationService(private val organizations: Organizations) {
     }
 
     suspend fun delete(organizationId: OrganizationId) {
-        // TODO delete comments too
         // TODO only hide
         return organizations.deleteById(organizationId)
     }
