@@ -26,6 +26,7 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor")
     implementation("org.springdoc:springdoc-openapi-webflux-ui:1.5.9")
     implementation("org.springdoc:springdoc-openapi-kotlin:1.5.9")
+    implementation("org.springdoc:springdoc-openapi-security:1.5.9")
     runtimeOnly("io.r2dbc:r2dbc-postgresql")
     runtimeOnly("io.micrometer:micrometer-registry-prometheus")
 
@@ -40,6 +41,13 @@ dependencies {
     testImplementation("io.kotest:kotest-runner-junit5:4.6.1")
     testImplementation("io.kotest:kotest-assertions-core-jvm:4.6.1")
     testImplementation("io.kotest:kotest-property:4.6.1")
+
+    // security
+    testImplementation("org.springframework.security:spring-security-test")
+    implementation("org.springframework.boot:spring-boot-starter-security")
+    implementation("io.jsonwebtoken:jjwt-api:0.11.2")
+    runtimeOnly("io.jsonwebtoken:jjwt-impl:0.11.2")
+    runtimeOnly("io.jsonwebtoken:jjwt-jackson:0.11.2")
 }
 
 tasks.withType<KotlinCompile> {

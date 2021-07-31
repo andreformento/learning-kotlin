@@ -35,5 +35,5 @@ class OrganizationRoleCreated(
     val id: OrganizationRoleId,
     val organizationId: OrganizationId,
     val userId: UserId,
-    val role: Role
+    val role: Role,
 )

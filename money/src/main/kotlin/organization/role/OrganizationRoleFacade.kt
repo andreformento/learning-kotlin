@@ -12,13 +12,7 @@ class OrganizationRoleFacade(private val organizationRoles: OrganizationRoles) {
         return organizationRoles.save(organizationCreation)
     }
 
-    suspend fun delete(
-        organizationRoleId: OrganizationRoleId,
-        organizationId: OrganizationId,
-        userId: UserId,
-    ) {
-        // TODO user has permission to this organization?
-        return organizationRoles.deleteById(organizationRoleId)
-    }
+    suspend fun delete(userId: UserId, organizationId: OrganizationId) =
+        organizationRoles.delete(userId, organizationId)
 
 }

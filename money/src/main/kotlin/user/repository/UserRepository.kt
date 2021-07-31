@@ -10,8 +10,8 @@ import org.springframework.stereotype.Repository
 @Repository
 internal interface UserRepository : CoroutineCrudRepository<UserEntity, UserId> {
 
-    @Query("SELECT * FROM users WHERE ID = :id")
-    suspend fun findOne(@Param("id") id: UserId): UserEntity?
+    @Query("SELECT * FROM users WHERE email = :email")
+    suspend fun findByEmail(@Param("email") email: String): UserEntity?
 
     @Modifying
     @Query("update users set name = :name, email = :email where id = :id")

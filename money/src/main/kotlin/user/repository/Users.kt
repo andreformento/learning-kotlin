@@ -1,35 +1,29 @@
 package com.andreformento.money.user.repository
 
 import com.andreformento.money.user.User
-import com.andreformento.money.user.UserCreation
+import com.andreformento.money.user.UserRegister
 import com.andreformento.money.user.UserId
-import com.andreformento.money.user.repository.UserEntity
-import com.andreformento.money.user.repository.UserRepository
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.map
 import org.springframework.stereotype.Repository
 
 @Repository
 class Users internal constructor(private val userRepository: UserRepository) {
 
-    fun findAll(): Flow<User> {
-        return userRepository.findAll().map(UserEntity::toModel)
+    suspend fun findById(id: UserId): User? {
+        // TODO send metric user not found by id
+        return userRepository.findById(id)?.toModel()
     }
 
-    suspend fun findOne(id: UserId): User? {
-        return userRepository.findOne(id)?.toModel()
+    suspend fun findByEmail(email: String): User? {
+        // TODO send metric user not found by email
+        return userRepository.findByEmail(email)?.toModel()
     }
 
-    suspend fun update(user: User): Int {
-        return userRepository.update(user.id, user.name, user.email)
+    suspend fun update(userId: UserId, userRegister: UserRegister): Int {
+        return userRepository.update(userId, userRegister.name, userRegister.email)
     }
 
-    suspend fun save(userCreation: UserCreation): User {
-        return userRepository.save(UserEntity(userCreation)).toModel()
-    }
-
-    suspend fun deleteById(id: UserId) {
-        return userRepository.deleteById(id)
+    suspend fun create(userRegister: UserRegister): User {
+        return userRepository.save(UserEntity(userRegister)).toModel()
     }
 
 }

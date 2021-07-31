@@ -25,18 +25,25 @@
 
 | URI pattern | Method | Description |
 |-------------|--------|-------------|
-| `/v1/organizations` | `GET` | Get all organizations |
-| `/v1/organizations` | `POST` | Create a organization |
-| `/v1/organizations/{organization-id}` | `GET` | Get one organization |
-| `/v1/organizations/{organization-id}` | `PUT` | Update a organization |
-| `/v1/organizations/{organization-id}` | `DELETE` | Delete a organization |
-| `/v1/organizations/{organization-id}/roles` | `GET` | Roles from a organization |
-| `/v1/organizations/{organization-id}/roles/{role-id}` | `GET` | A role from a organization |
+| `/organizations` | `GET` | Get all organizations |
+| `/organizations` | `POST` | Create a organization |
+| `/organizations/{organization-id}` | `GET` | Get one organization |
+| `/organizations/{organization-id}` | `PUT` | Update a organization |
+| `/organizations/{organization-id}` | `DELETE` | Delete a organization |
+| `/organizations/{organization-id}/roles` | `GET` | Roles from a organization |
+| `/organizations/{organization-id}/roles/{role-id}` | `GET` | A role from a organization |
 
 ### Terminal example
 
+Run make and be happy
+
+- `make signup`
+- `make login`
+- `make get-user`
+
+- create an organization
 ```shell
-curl -v -X POST 'http://localhost:8080/v1/organizations' \
+curl -v -b cookies.txt -X POST 'http://localhost:8080/organizations' \
   -H 'Content-Type: application/json' \
   --data-raw '{"name":"a new organization", "description":"My first organization"}'
 ```
@@ -56,13 +63,18 @@ Response header `Location` contains the new ID
 - https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#actuator.metrics.export.prometheus
 
 ## TODO
-- sec
+- sec 
+  - [Springboot + Kotlin](https://medium.com/@jonssantana/authentication-e-authorization-usando-springboot-kotlin-382681024d08)
+  - [reactive](https://medium.com/@jaidenashmore/jwt-authentication-in-spring-boot-webflux-6880c96247c7)
+  - [private public keu](https://www.novixys.com/blog/how-to-generate-rsa-keys-java/)
 - log
-- unit test [Kotest](https://kotest.io/) + [Mockk](https://mockk.io/)
+- unit test junit5 + [Mockk](https://mockk.io/)
 - integration test
 - docker
+  - https://blog.jetbrains.com/idea/2021/01/run-targets-run-and-debug-your-app-in-the-desired-environment/
 - hex? entity, request, response, model
 - kubernetes (Helm) deployments
 - Spring Boot DevTools
 - code formater [spotless](https://github.com/diffplug/spotless)
 - https://github.com/JetBrains/Exposed
+- opentracing/jaeger

@@ -11,10 +11,10 @@ fun String.toUserId(): UserId {
 data class User(
     val id: UserId,
     val name: String,
-    val email: String
+    val email: String,
 )
 
-data class UserCreation(
+data class UserRegister(
     val name: String,
-    val email: String
+    val email: String,
 )

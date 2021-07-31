@@ -1,7 +1,7 @@
 package com.andreformento.money.user.repository
 
 import com.andreformento.money.user.User
-import com.andreformento.money.user.UserCreation
+import com.andreformento.money.user.UserRegister
 import com.andreformento.money.user.UserId
 import org.springframework.data.annotation.Id
 import org.springframework.data.relational.core.mapping.Column
@@ -13,7 +13,7 @@ data class UserEntity(
     @Column("name") val name: String,
     @Column("email") val email: String
 ) {
-    constructor(userCreation: UserCreation) : this(name = userCreation.name, email = userCreation.email)
+    constructor(userRegister: UserRegister) : this(name = userRegister.name, email = userRegister.email)
 
     fun toModel(): User {
         return User(this.id!!, this.name, this.email)
