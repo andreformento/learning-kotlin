@@ -25,13 +25,13 @@
 
 | URI pattern | Method | Description |
 |-------------|--------|-------------|
-| `/posts` | `GET` | Get all posts |
-| `/posts` | `POST` | Create a post |
-| `/posts/{post-id}` | `GET` | Get one post |
-| `/posts/{post-id}` | `PUT` | Update a post |
-| `/posts/{post-id}` | `DELETE` | Delete a post |
-| `/posts/{post-id}/comments` | `GET` | Comments from a post |
-| `/posts/{post-id}/comments/{comment-id}` | `GET` | A comment from a post |
+| `/organizations` | `GET` | Get all organizations |
+| `/organizations` | `POST` | Create a organization |
+| `/organizations/{organization-id}` | `GET` | Get one organization |
+| `/organizations/{organization-id}` | `PUT` | Update a organization |
+| `/organizations/{organization-id}` | `DELETE` | Delete a organization |
+| `/organizations/{organization-id}/roles` | `GET` | Roles from a organization |
+| `/organizations/{organization-id}/roles/{role-id}` | `GET` | A role from a organization |
 
 ### Terminal example
 
