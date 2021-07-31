@@ -25,20 +25,20 @@
 
 | URI pattern | Method | Description |
 |-------------|--------|-------------|
-| `/organizations` | `GET` | Get all organizations |
-| `/organizations` | `POST` | Create a organization |
-| `/organizations/{organization-id}` | `GET` | Get one organization |
-| `/organizations/{organization-id}` | `PUT` | Update a organization |
-| `/organizations/{organization-id}` | `DELETE` | Delete a organization |
-| `/organizations/{organization-id}/roles` | `GET` | Roles from a organization |
-| `/organizations/{organization-id}/roles/{role-id}` | `GET` | A role from a organization |
+| `/v1/organizations` | `GET` | Get all organizations |
+| `/v1/organizations` | `POST` | Create a organization |
+| `/v1/organizations/{organization-id}` | `GET` | Get one organization |
+| `/v1/organizations/{organization-id}` | `PUT` | Update a organization |
+| `/v1/organizations/{organization-id}` | `DELETE` | Delete a organization |
+| `/v1/organizations/{organization-id}/roles` | `GET` | Roles from a organization |
+| `/v1/organizations/{organization-id}/roles/{role-id}` | `GET` | A role from a organization |
 
 ### Terminal example
 
 ```shell
-curl -v -X POST 'http://localhost:8080/posts' \
+curl -v -X POST 'http://localhost:8080/v1/organizations' \
   -H 'Content-Type: application/json' \
-  --data-raw '{"title":"a new post", "content":"Blablabla"}'
+  --data-raw '{"name":"a new organization", "description":"My first organization"}'
 ```
 
 Response header `Location` contains the new ID

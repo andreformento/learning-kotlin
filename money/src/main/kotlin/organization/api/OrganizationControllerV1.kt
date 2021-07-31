@@ -10,8 +10,8 @@ import org.springframework.web.bind.annotation.*
 import java.net.URI
 
 @RestController
-@RequestMapping("/organizations", produces = ["application/json"])
-class OrganizationController(private val organizationFacade: OrganizationFacade) {
+@RequestMapping("/v1/organizations", produces = ["application/json"])
+class OrganizationControllerV1(private val organizationFacade: OrganizationFacade) {
 
     @GetMapping
     suspend fun all(): Flow<Organization> {

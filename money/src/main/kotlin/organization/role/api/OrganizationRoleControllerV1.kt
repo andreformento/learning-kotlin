@@ -11,8 +11,8 @@ import org.springframework.web.bind.annotation.*
 import java.net.URI
 
 @RestController
-@RequestMapping("/organizations/{organization-id}/roles", produces = ["application/json"])
-class OrganizationRoleController(private val organizationRoleFacade: OrganizationRoleFacade) {
+@RequestMapping("/v1/organizations/{organization-id}/roles", produces = ["application/json"])
+class OrganizationRoleControllerV1(private val organizationRoleFacade: OrganizationRoleFacade) {
 
     @PostMapping
     suspend fun create(@RequestBody organizationRoleCreation: OrganizationRoleCreation): ResponseEntity<OrganizationRoleCreated> {
@@ -20,7 +20,7 @@ class OrganizationRoleController(private val organizationRoleFacade: Organizatio
         return ResponseEntity.created(URI.create("/organizations/${organizationRoleCreated.id}")).body(organizationRoleCreated)
     }
 
-    @DeleteMapping("/{organization-id}")
+    @DeleteMapping("/{organization-role-id}")
     suspend fun delete(
         @PathVariable("organization-id") organizationId: String,
         @PathVariable("organization-role-id") organizationRoleId: String): ResponseEntity<Any> {
