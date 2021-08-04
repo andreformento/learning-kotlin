@@ -65,3 +65,4 @@ Response header `Location` contains the new ID
 - kubernetes (Helm) deployments
 - Spring Boot DevTools
 - code formater [spotless](https://github.com/diffplug/spotless)
+- https://github.com/JetBrains/Exposed
