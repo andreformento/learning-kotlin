@@ -11,7 +11,7 @@ class UserAuthPasswords internal constructor(private val userAuthPasswordReposit
         userAuthPasswordRepository.update(userAuthPasswordChange.userId, userAuthPasswordChange.password)
 
     suspend fun createPassword(userAuthPasswordCreation: UserAuthPasswordCreation): Int =
-        userAuthPasswordRepository.insert(
+        userAuthPasswordRepository.create(
             userId = userAuthPasswordCreation.userId,
             userPassword = userAuthPasswordCreation.password
         )

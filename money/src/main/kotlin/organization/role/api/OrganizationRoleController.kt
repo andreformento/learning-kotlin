@@ -16,22 +16,22 @@ data class OrganizationRoleCreationRequest(val role: Role)
 @RequestMapping("/organizations/{organization-id}/roles", produces = ["application/json"])
 class OrganizationRoleController(private val organizationRoleFacade: OrganizationRoleFacade) {
 
-    @PostMapping
-    suspend fun create(
-        authentication: CurrentUserAuthentication,
-        @PathVariable("organization-id") organizationId: String,
-        @RequestBody organizationRoleCreationRequest: OrganizationRoleCreationRequest,
-    ): ResponseEntity<OrganizationRoleCreated> {
-        val organizationRoleCreated = organizationRoleFacade.create(
-            OrganizationRoleCreation(
-                userId = authentication.principal.id,
-                organizationId = organizationId.toOrganizationId(),
-                role = organizationRoleCreationRequest.role,
-            )
-        )
-        return ResponseEntity.created(URI.create("/organizations/${organizationRoleCreated.id}"))
-            .body(organizationRoleCreated)
-    }
+//    @PostMapping
+//    suspend fun create(
+//        authentication: CurrentUserAuthentication,
+//        @PathVariable("organization-id") organizationId: String,
+//        @RequestBody organizationRoleCreationRequest: OrganizationRoleCreationRequest,
+//    ): ResponseEntity<OrganizationRoleCreated> {
+//        val organizationRoleCreated = organizationRoleFacade.create(
+//            OrganizationRoleCreation(
+//                userId = authentication.principal.id,
+//                organizationId = organizationId.toOrganizationId(),
+//                role = organizationRoleCreationRequest.role,
+//            )
+//        )
+//        return ResponseEntity.created(URI.create("/organizations/${organizationRoleCreated.id}"))
+//            .body(organizationRoleCreated)
+//    }
 
     @DeleteMapping("/{organization-role-id}")
     suspend fun delete(

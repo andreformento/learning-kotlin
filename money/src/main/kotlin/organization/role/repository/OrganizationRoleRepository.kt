@@ -13,6 +13,16 @@ import org.springframework.stereotype.Repository
 internal interface OrganizationRoleRepository : CoroutineCrudRepository<OrganizationRoleEntity, OrganizationRoleId> {
 
     @Modifying
+    @Query("""INSERT INTO organization_role ( id,  user_id,  organization_id,  organization_role) VALUES
+                                            (:id, :user_id, :organization_id, cast(:organization_role as role_description))""")
+    suspend fun create(
+        @Param("id") organizationRoleId: OrganizationRoleId,
+        @Param("user_id") userId: UserId,
+        @Param("organization_id") organizationId: OrganizationId,
+        @Param("organization_role") organizationRole: String,
+    )
+
+    @Modifying
     @Query("delete from organization_role where user_id = :user_id and organization_id = :organization_id ")
     suspend fun delete(
         @Param("user_id") userId: UserId,

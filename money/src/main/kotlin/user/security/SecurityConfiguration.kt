@@ -112,7 +112,7 @@ class SecurityConfiguration {
             .pathMatchers(HttpMethod.GET, *permittedGetPaths).permitAll()
             .pathMatchers(HttpMethod.POST, *permittedPostPaths).permitAll()
             //TODO
-//            .pathMatchers("/organizations/{organization-id}/**").access(am)
+            .pathMatchers("/organizations/{organization-id}/**").access(am)
 //            .access("@webSecurity.checkUserId(authentication,#userId)")
 //                https://docs.spring.io/spring-security/site/docs/current/reference/html5/#authorization
             .anyExchange().authenticated()

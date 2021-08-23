@@ -11,15 +11,15 @@ import org.springframework.stereotype.Repository
 internal interface UserAuthPasswordRepository : CoroutineCrudRepository<UserAuthPasswordEntity, UserId> {
 
     @Modifying
-    @Query("update user_auth_password set user_password = :user_password where user_id = :user_id")
-    suspend fun update(
+    @Query("insert into user_auth_password (user_id, user_password) values (:user_id, :user_password)")
+    suspend fun create(
         @Param("user_id") userId: UserId,
         @Param("user_password") userPassword: String,
     ): Int
 
     @Modifying
-    @Query("insert into user_auth_password (user_id, user_password) values (:user_id, :user_password)")
-    suspend fun insert(
+    @Query("update user_auth_password set user_password = :user_password where user_id = :user_id")
+    suspend fun update(
         @Param("user_id") userId: UserId,
         @Param("user_password") userPassword: String,
     ): Int

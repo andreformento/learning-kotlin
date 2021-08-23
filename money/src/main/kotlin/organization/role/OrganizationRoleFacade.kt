@@ -8,9 +8,8 @@ import org.springframework.stereotype.Service
 @Service
 class OrganizationRoleFacade(private val organizationRoles: OrganizationRoles) {
 
-    suspend fun create(organizationCreation: OrganizationRoleCreation): OrganizationRoleCreated {
-        return organizationRoles.save(organizationCreation)
-    }
+    suspend fun create(organizationCreation: OrganizationRoleCreation) =
+        organizationRoles.save(organizationCreation)
 
     suspend fun delete(userId: UserId, organizationId: OrganizationId) =
         organizationRoles.delete(userId, organizationId)
