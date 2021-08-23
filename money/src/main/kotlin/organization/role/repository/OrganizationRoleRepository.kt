@@ -15,7 +15,7 @@ internal interface OrganizationRoleRepository : CoroutineCrudRepository<Organiza
     @Modifying
     @Query("""INSERT INTO organization_role ( id,  user_id,  organization_id,  organization_role) VALUES
                                             (:id, :user_id, :organization_id, cast(:organization_role as role_description))""")
-    suspend fun create(
+    suspend fun save(
         @Param("id") organizationRoleId: OrganizationRoleId,
         @Param("user_id") userId: UserId,
         @Param("organization_id") organizationId: OrganizationId,

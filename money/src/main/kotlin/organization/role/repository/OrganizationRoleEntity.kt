@@ -31,7 +31,7 @@ data class OrganizationRoleEntity(
             id = this.id,
             organizationId = this.organizationId,
             userId = this.userId,
-            role = Role.valueOf(this.organizationRole)
+            role = Role.valueOf(this.organizationRole.uppercase())
         )
 
 }
