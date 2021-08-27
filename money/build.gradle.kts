@@ -31,16 +31,11 @@ dependencies {
     runtimeOnly("io.micrometer:micrometer-registry-prometheus")
 
     testImplementation("org.springframework.boot:spring-boot-starter-test") {
-        exclude(module = "junit")
         exclude(module = "mockito-core")
     }
     testImplementation("io.projectreactor:reactor-test")
 
-    implementation("io.kotest.extensions:kotest-extensions-spring:1.0.0")
     testImplementation("io.mockk:mockk:1.12.0")
-    testImplementation("io.kotest:kotest-runner-junit5:4.6.1")
-    testImplementation("io.kotest:kotest-assertions-core-jvm:4.6.1")
-    testImplementation("io.kotest:kotest-property:4.6.1")
 
     // security
     testImplementation("org.springframework.security:spring-security-test")
