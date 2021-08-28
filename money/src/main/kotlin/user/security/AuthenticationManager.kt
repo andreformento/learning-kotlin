@@ -1,6 +1,5 @@
 package com.andreformento.money.user.security
 
-import com.andreformento.money.organization.Organization
 import com.andreformento.money.organization.role.OrganizationRole
 import com.andreformento.money.user.User
 import com.andreformento.money.user.UserFacade
@@ -73,6 +72,7 @@ class TokenCookieHandler(
         ?.takeIf { it.isNotEmpty() }
         ?.let { it[0].value }
         ?.let { rawToken ->
+            // TODO look for a organization id
             tokenSigner
                 .validateToken(rawToken)
                 ?.let { validatedUserIdentification ->
