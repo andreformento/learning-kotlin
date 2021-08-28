@@ -25,7 +25,7 @@ internal interface OrganizationRepository : CoroutineCrudRepository<Organization
     suspend fun update(
         @Param("id") id: OrganizationId,
         @Param("name") name: String,
-        @Param("description") description: String
+        @Param("description") description: String,
     ): Int
 
 }

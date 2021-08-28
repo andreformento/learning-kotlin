@@ -13,8 +13,10 @@ import org.springframework.stereotype.Repository
 internal interface OrganizationRoleRepository : CoroutineCrudRepository<OrganizationRoleEntity, OrganizationRoleId> {
 
     @Modifying
-    @Query("""INSERT INTO organization_role ( id,  user_id,  organization_id,  organization_role) VALUES
-                                            (:id, :user_id, :organization_id, cast(:organization_role as role_description))""")
+    @Query(
+        """INSERT INTO organization_role ( id,  user_id,  organization_id,  organization_role) VALUES
+                                            (:id, :user_id, :organization_id, cast(:organization_role as role_description))"""
+    )
     suspend fun save(
         @Param("id") organizationRoleId: OrganizationRoleId,
         @Param("user_id") userId: UserId,

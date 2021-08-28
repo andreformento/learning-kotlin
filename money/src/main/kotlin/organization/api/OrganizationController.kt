@@ -1,8 +1,8 @@
 package com.andreformento.money.organization.api
 
 import com.andreformento.money.organization.Organization
-import com.andreformento.money.organization.OrganizationRegister
 import com.andreformento.money.organization.OrganizationFacade
+import com.andreformento.money.organization.OrganizationRegister
 import com.andreformento.money.organization.toOrganizationId
 import com.andreformento.money.user.security.CurrentUserAuthentication
 import kotlinx.coroutines.flow.Flow
@@ -38,7 +38,7 @@ class OrganizationController(private val organizationFacade: OrganizationFacade)
     ): ResponseEntity<Organization> {
         val currentUser = authentication.principal
         println("path variable::$organizationId")
-        val foundOrganization = organizationFacade.getById(currentUser, organizationId.toOrganizationId())
+        val foundOrganization = organizationFacade.findById(organizationId.toOrganizationId())
         println("found organization:$foundOrganization")
         return when {
             foundOrganization != null -> ResponseEntity.ok(foundOrganization)
@@ -55,7 +55,6 @@ class OrganizationController(private val organizationFacade: OrganizationFacade)
         val currentUser = authentication.principal
         val updateResult =
             organizationFacade.update(
-                currentUser = currentUser,
                 organizationId = organizationId.toOrganizationId(),
                 organization = organization
             )
@@ -69,7 +68,7 @@ class OrganizationController(private val organizationFacade: OrganizationFacade)
         @PathVariable("organization-id") organizationId: String
     ): ResponseEntity<Any> {
         val currentUser = authentication.principal
-        val deletedCount = organizationFacade.delete(currentUser, organizationId.toOrganizationId())
+        val deletedCount = organizationFacade.delete(organizationId.toOrganizationId())
         println("$deletedCount organizations deleted")
         return ResponseEntity.noContent().build()
     }

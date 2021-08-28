@@ -1,5 +1,7 @@
 package com.andreformento.money.user.security
 
+import com.andreformento.money.organization.Organization
+import com.andreformento.money.organization.role.OrganizationRole
 import com.andreformento.money.user.User
 import com.andreformento.money.user.UserFacade
 import kotlinx.coroutines.runBlocking
@@ -30,13 +32,33 @@ data class CurrentUserAuthentication(
         TODO("Not yet implemented")
     }
 
-    override fun getPrincipal() = this.currentUser
+    override fun getPrincipal(): CurrentUser = this.currentUser
 
     override fun isAuthenticated() = true
 
     override fun setAuthenticated(isAuthenticated: Boolean) {
     }
 
+}
+
+data class CurrentUserOrganizationAuthentication constructor(
+    private val currentUserAuthentication: CurrentUserAuthentication,
+    private val organizationRole: OrganizationRole,
+) : Authentication {
+
+    override fun getName() = currentUserAuthentication.getName()
+
+    override fun getAuthorities() = currentUserAuthentication.getAuthorities()
+
+    override fun getCredentials() = currentUserAuthentication.getCredentials()
+
+    override fun getDetails() = currentUserAuthentication.getDetails()
+
+    override fun getPrincipal(): OrganizationRole = organizationRole
+
+    override fun isAuthenticated() = currentUserAuthentication.isAuthenticated()
+
+    override fun setAuthenticated(isAuthenticated: Boolean) = currentUserAuthentication.setAuthenticated(isAuthenticated)
 }
 
 @Component

@@ -11,29 +11,21 @@ import org.springframework.stereotype.Service
 @Service
 class OrganizationFacade(private val organizations: Organizations, private val organizationRoles: OrganizationRoles) {
 
-    suspend fun getAllFromUser(currentUser: CurrentUser): Flow<Organization> {
-        return organizations.findAllFromUser(currentUser)
-    }
+    suspend fun getAllFromUser(currentUser: CurrentUser): Flow<Organization> =
+        organizations.findAllFromUser(currentUser)
 
-    suspend fun create(currentUser: CurrentUser, organizationRegister: OrganizationRegister): Organization {
-        val organizationCreated = organizations.save(organizationRegister)
-        organizationRoles.save(OrganizationRoleCreation(organizationCreated.id, currentUser.id, Role.OWNER))
-        return organizationCreated
-    }
+    suspend fun create(currentUser: CurrentUser, organizationRegister: OrganizationRegister): Organization =
+        organizations
+            .save(organizationRegister)
+            .also { organizationRoles.save(OrganizationRoleCreation(it.id, currentUser.id, Role.OWNER)) }
 
-    suspend fun getById(currentUser: CurrentUser, organizationId: OrganizationId): Organization? {
-        // TODO authorization
-        return organizations.findById(organizationId)
-    }
+    suspend fun findById(organizationId: OrganizationId) =
+        organizations.findById(organizationId)
 
-    suspend fun update(currentUser: CurrentUser, organizationId: OrganizationId, organization: Organization): Int {
-        // TODO authorization
-        return organizations.update(Organization(organizationId, organization.name, organization.description))
-    }
+    suspend fun update(organizationId: OrganizationId, organization: Organization): Int =
+        organizations.update(Organization(organizationId, organization.name, organization.description))
 
-    suspend fun delete(currentUser: CurrentUser, organizationId: OrganizationId) {
-        // TODO only hide
-        return organizations.deleteById(organizationId)
-    }
+    suspend fun delete(organizationId: OrganizationId) =
+        organizations.deleteById(organizationId)
 
 }
