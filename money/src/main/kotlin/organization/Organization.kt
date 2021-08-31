@@ -14,7 +14,7 @@ data class Organization(
     val description: String
 )
 
-data class OrganizationCreation(
+data class OrganizationRegister(
     val name: String,
     val description: String
 )

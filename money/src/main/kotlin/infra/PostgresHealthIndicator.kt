@@ -1,24 +1,23 @@
 package com.andreformento.money.infra
 
-import com.andreformento.money.organization.Organization
-import com.andreformento.money.organization.repository.Organizations
+import com.andreformento.money.user.User
+import com.andreformento.money.user.repository.Users
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.runBlocking
 import org.springframework.boot.actuate.health.Health
 import org.springframework.boot.actuate.health.HealthIndicator
 import org.springframework.stereotype.Component
 
 @Component
-class PostgresHealthIndicator(private val repository: Organizations) : HealthIndicator {
+class PostgresHealthIndicator(private val repository: Users) : HealthIndicator {
     // TODO this is the best way? I hope not!
     // https://www.baeldung.com/spring-boot-health-indicators
     // https://docs.spring.io/spring-boot/docs/current/api/org/springframework/boot/actuate/health/ReactiveHealthIndicator.html
     override fun health(): Health {
         return try {
-            var firstEntity: Organization?
+            var firstEntity: User?
             runBlocking(Dispatchers.Default) {
-                firstEntity = repository.findAll().firstOrNull()
+                firstEntity = repository.findByEmail("iron-maiden@evil.hell")
             }
 
             if (firstEntity == null) {

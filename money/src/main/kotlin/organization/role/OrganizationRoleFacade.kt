@@ -8,17 +8,10 @@ import org.springframework.stereotype.Service
 @Service
 class OrganizationRoleFacade(private val organizationRoles: OrganizationRoles) {
 
-    suspend fun create(organizationCreation: OrganizationRoleCreation): OrganizationRoleCreated {
-        return organizationRoles.save(organizationCreation)
-    }
+    suspend fun create(organizationCreation: OrganizationRoleCreation): OrganizationRoleCreated =
+        organizationRoles.save(organizationCreation)
 
-    suspend fun delete(
-        organizationRoleId: OrganizationRoleId,
-        organizationId: OrganizationId,
-        userId: UserId,
-    ) {
-        // TODO user has permission to this organization?
-        return organizationRoles.deleteById(organizationRoleId)
-    }
+    suspend fun delete(userId: UserId, organizationId: OrganizationId) =
+        organizationRoles.delete(userId, organizationId)
 
 }

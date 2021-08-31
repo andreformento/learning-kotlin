@@ -9,8 +9,29 @@ database:
 	            -v $$(pwd)/migrations/:/docker-entrypoint-initdb.d/:ro \
 	            postgres:13.3
 
-wait-for-database:
+wait-for-database: database
 	@until docker run -it -e PGPASSWORD=password --rm --link database:pg postgres:13.3 psql -U user -h pg -c "select 1" -d mydb; do sleep 0.5; done
 
-run: database wait-for-database
+run: wait-for-database
 	@./gradlew bootRun
+
+signup:
+	curl 'http://localhost:8080/user/auth/signup' \
+          -H 'Content-Type: application/json' \
+          --data-raw '{"name":"Batman", "email":"a@a.com", "password":"pass123"}'
+
+login:
+	curl -c cookies.txt 'http://localhost:8080/user/auth/login' \
+          -H 'Content-Type: application/json' \
+          --data-raw '{"email":"a@a.com", "password":"pass123"}'
+
+get-user:
+	curl -b cookies.txt 'http://localhost:8080/user'
+
+create-organization:
+	curl -b cookies.txt 'http://localhost:8080/organizations' \
+			-H 'Content-Type: application/json' \
+			--data-raw '{"name":"my org", "description": "blah"}'
+
+get-organizations:
+	curl -b cookies.txt 'http://localhost:8080/organizations'

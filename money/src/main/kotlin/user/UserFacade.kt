@@ -1,34 +1,29 @@
 package com.andreformento.money.user
 
 import com.andreformento.money.user.repository.Users
-import kotlinx.coroutines.flow.Flow
 import org.springframework.stereotype.Service
 
 @Service
 class UserFacade(private val users: Users) {
 
-    suspend fun all(): Flow<User> {
-        return users.findAll()
-    }
-
-    suspend fun create(userCreation: UserCreation): User {
+    suspend fun create(userRegister: UserRegister): User {
         // TODO authorization
-        return users.save(userCreation)
+        return users.create(userRegister)
     }
 
-    suspend fun getById(userId: UserId): User? {
+    suspend fun findById(userId: UserId): User? {
         // TODO authorization
-        return users.findOne(userId)
+        return users.findById(userId)
     }
 
-    suspend fun update(userId: UserId, user: User): Int {
+    suspend fun findByEmail(email: String): User? {
         // TODO authorization
-        return users.update(User(userId, user.name, user.email))
+        return users.findByEmail(email)
     }
 
-    suspend fun delete(userId: UserId) {
-        // TODO only hide
-        return users.deleteById(userId)
+    suspend fun update(userId: UserId, userRegister: UserRegister): Int {
+        // TODO authorization
+        return users.update(userId, userRegister)
     }
 
 }
