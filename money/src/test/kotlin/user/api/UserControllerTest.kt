@@ -4,17 +4,24 @@ import com.andreformento.money.user.security.UserCredentials
 import com.andreformento.money.user.security.api.UserSignupCreation
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.web.reactive.server.WebTestClient
 import org.springframework.test.web.reactive.server.expectBody
 import org.springframework.test.web.reactive.server.returnResult
 import org.springframework.util.LinkedMultiValueMap
+import org.testcontainers.junit.jupiter.Testcontainers
 import kotlin.random.Random
 
-
+//@SpringBootTest
+//@AutoConfigureWebTestClient(timeout = "36000")
+//@Testcontainers
+//@ActiveProfiles("integration-test")
 @SpringBootTest
-@AutoConfigureWebTestClient
+//@DataJpaTest
+//@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
+@Testcontainers
 class UserControllerTest {
 
     @Autowired

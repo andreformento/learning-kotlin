@@ -21,13 +21,17 @@ class PostgresHealthIndicator(private val repository: Users) : HealthIndicator {
             }
 
             if (firstEntity == null) {
-                Health.down().withDetail("Cannot get any data from database", object {}).build()
+                Health.down().withDetail("errorMessage", "Cannot get any data from database").build()
             } else {
                 println("firstPost $firstEntity")
                 Health.up().build()
             }
         } catch (e: Exception) {
-            Health.down().withDetail("Cannot connect to database", e).build()
+            Health
+                .down()
+                .withDetail("errorMessage", "Cannot connect to database")
+                .withDetail("detail", e)
+                .build()
         }
     }
 }

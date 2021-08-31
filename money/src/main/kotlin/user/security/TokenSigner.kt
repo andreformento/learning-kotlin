@@ -20,13 +20,13 @@ data class ValidatedUserIdentification(val email: String, val organizationId: Or
 
 @Service
 class TokenSigner(
-    @Value("\${security.key.private}") private val privateKeyConfig: String,
-    @Value("\${security.key.public}") private val publicKeyConfig: String
+//    @Value("\${security.key.private}") private val privateKeyConfig: String,
+//    @Value("\${security.key.public}") private val publicKeyConfig: String
 ) {
     private val keyPair: KeyPair = Keys.keyPairFor(SignatureAlgorithm.RS256)
 
-    private val privateKey = Keys.hmacShaKeyFor(Decoders.BASE64.decode(privateKeyConfig))
-    private val publicKey = Keys.hmacShaKeyFor(Decoders.BASE64.decode(publicKeyConfig))
+//    private val privateKey = Keys.hmacShaKeyFor(Decoders.BASE64.decode(privateKeyConfig))
+//    private val publicKey = Keys.hmacShaKeyFor(Decoders.BASE64.decode(publicKeyConfig))
 
     private val jwtBuilder: JwtBuilder = Jwts.builder()
     private val jwtParser: JwtParser = Jwts.parserBuilder().setSigningKey(keyPair.public).build()

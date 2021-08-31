@@ -18,12 +18,12 @@ wait-for-database: database
 migrate-database: wait-for-database
 	@docker run --rm \
                 --link database:pg \
-                -v $$(pwd)/migrations/:/flyway/sql:ro \
+                -v $$(pwd)/src/main/resources/db/migration/:/flyway/sql:ro \
                 -e FLYWAY_EDITION=community \
                 flyway/flyway:7.15.0 \
                 -url=jdbc:postgresql://database:5432/mydb -schemas=public -user=user -password=password migrate
 
-run: wait-for-database
+run: migrate-database
 	@./gradlew bootRun
 
 signup:

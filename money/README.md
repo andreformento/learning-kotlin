@@ -73,6 +73,7 @@ Response header `Location` contains the new ID
   - unit test junit5 + [Mockk](https://mockk.io/)
   - integration test
   - testcontainer
+    - https://mister11.github.io/posts/testing_spring_webflux_application/
 - docker
   - https://blog.jetbrains.com/idea/2021/01/run-targets-run-and-debug-your-app-in-the-desired-environment/
   - docker compose with graphite
