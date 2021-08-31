@@ -66,15 +66,20 @@ Response header `Location` contains the new ID
 - sec 
   - [Springboot + Kotlin](https://medium.com/@jonssantana/authentication-e-authorization-usando-springboot-kotlin-382681024d08)
   - [reactive](https://medium.com/@jaidenashmore/jwt-authentication-in-spring-boot-webflux-6880c96247c7)
-  - [private public keu](https://www.novixys.com/blog/how-to-generate-rsa-keys-java/)
+  - [private public key](https://www.novixys.com/blog/how-to-generate-rsa-keys-java/)
+  - google integration
 - log
-- unit test junit5 + [Mockk](https://mockk.io/)
-- integration test
+- test
+  - unit test junit5 + [Mockk](https://mockk.io/)
+  - integration test
+  - testcontainer
 - docker
   - https://blog.jetbrains.com/idea/2021/01/run-targets-run-and-debug-your-app-in-the-desired-environment/
+  - docker compose with graphite
 - hex? entity, request, response, model
 - kubernetes (Helm) deployments
 - Spring Boot DevTools
 - code formater [spotless](https://github.com/diffplug/spotless)
-- https://github.com/JetBrains/Exposed
+- [https://github.com/JetBrains/Exposed](Exposed?)
 - opentracing/jaeger
+- rest api integration with other application
