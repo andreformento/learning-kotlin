@@ -1,8 +1,8 @@
 package com.andreformento.money.user.security
 
 import com.andreformento.money.user.User
-import com.andreformento.money.user.UserRegister
 import com.andreformento.money.user.UserFacade
+import com.andreformento.money.user.UserRegister
 import com.andreformento.money.user.security.repository.UserAuthPasswords
 import org.springframework.stereotype.Service
 

@@ -28,9 +28,9 @@ class OrganizationRoles internal constructor(
     suspend fun delete(userId: UserId, organizationId: OrganizationId) =
         organizationRoleRepository.delete(userId, organizationId)
 
-    suspend fun getUnsafeUserOrganization(userId: UserId, organizationId: OrganizationId): OrganizationRole? =
+    suspend fun getUnsafeUserOrganization(userEmail: String, organizationId: OrganizationId): OrganizationRole? =
         fullOrganizationRoleRepository
-            .getUnsafeUserOrganization(userId = userId, organizationId = organizationId)
+            .getUnsafeUserOrganization(userEmail = userEmail, organizationId = organizationId)
             ?.toModel()
 
 }

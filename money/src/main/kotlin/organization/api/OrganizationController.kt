@@ -5,6 +5,7 @@ import com.andreformento.money.organization.OrganizationFacade
 import com.andreformento.money.organization.OrganizationRegister
 import com.andreformento.money.organization.toOrganizationId
 import com.andreformento.money.user.security.CurrentUserAuthentication
+import com.andreformento.money.user.security.CurrentUserOrganizationAuthentication
 import kotlinx.coroutines.flow.Flow
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
@@ -33,8 +34,8 @@ class OrganizationController(private val organizationFacade: OrganizationFacade)
 
     @GetMapping("/{organization-id}")
     suspend fun getById(
-        authentication: CurrentUserAuthentication,
-        @PathVariable("organization-id") organizationId: String
+            authentication: CurrentUserOrganizationAuthentication,
+            @PathVariable("organization-id") organizationId: String
     ): ResponseEntity<Organization> {
         val currentUser = authentication.principal
         println("path variable::$organizationId")
@@ -48,7 +49,7 @@ class OrganizationController(private val organizationFacade: OrganizationFacade)
 
     @PutMapping("/{organization-id}")
     suspend fun update(
-        authentication: CurrentUserAuthentication,
+        authentication: CurrentUserOrganizationAuthentication,
         @PathVariable("organization-id") organizationId: String,
         @RequestBody organization: Organization
     ): ResponseEntity<Any> {
@@ -64,7 +65,7 @@ class OrganizationController(private val organizationFacade: OrganizationFacade)
 
     @DeleteMapping("/{organization-id}")
     suspend fun delete(
-        authentication: CurrentUserAuthentication,
+        authentication: CurrentUserOrganizationAuthentication,
         @PathVariable("organization-id") organizationId: String
     ): ResponseEntity<Any> {
         val currentUser = authentication.principal

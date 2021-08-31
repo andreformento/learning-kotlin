@@ -1,5 +1,6 @@
 package com.andreformento.money.user.security
 
+import com.andreformento.money.organization.OrganizationId
 import io.jsonwebtoken.*
 import io.jsonwebtoken.io.Decoders
 import io.jsonwebtoken.security.Keys
@@ -13,8 +14,8 @@ import java.util.*
 
 data class SignedToken(val token: String)
 
-data class ValidatedUserIdentification(val email: String) {
-    constructor(jws: Jws<Claims>) : this(email = jws.body.subject)
+data class ValidatedUserIdentification(val email: String, val organizationId: OrganizationId?) {
+    constructor(jws: Jws<Claims>, organizationId: OrganizationId?) : this(email = jws.body.subject, organizationId)
 }
 
 @Service
@@ -42,9 +43,9 @@ class TokenSigner(
     /**
      * Validate the JWT where it will throw an exception if it isn't valid.
      */
-    fun validateToken(rawToken: String): ValidatedUserIdentification? =
+    fun validateIdentification(rawToken: String, organizationId: OrganizationId?): ValidatedUserIdentification? =
         try {
-            ValidatedUserIdentification(jwtParser.parseClaimsJws(rawToken))
+            ValidatedUserIdentification(jwtParser.parseClaimsJws(rawToken), organizationId)
         } catch (e: Exception) {
             // TODO metrics about invalid token
             null

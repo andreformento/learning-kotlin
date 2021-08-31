@@ -1,8 +1,6 @@
 package com.andreformento.money.user.security
 
-import com.andreformento.money.organization.OrganizationId
 import com.andreformento.money.organization.role.repository.OrganizationRoles
-import kotlinx.coroutines.runBlocking
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.http.HttpMethod
@@ -17,7 +15,6 @@ import org.springframework.security.web.server.authentication.AuthenticationWebF
 import org.springframework.security.web.server.authentication.ServerAuthenticationConverter
 import org.springframework.security.web.server.authorization.AuthorizationContext
 import reactor.core.publisher.Mono
-import reactor.kotlin.core.publisher.toMono
 
 
 @Configuration
@@ -91,37 +88,17 @@ class SecurityConfiguration {
         val authenticationWebFilter = AuthenticationWebFilter(jwtAuthenticationManager)
         authenticationWebFilter.setServerAuthenticationConverter(jwtAuthenticationConverter)
 
-        val am =
+        val organizationAuthorizationManager =
             ReactiveAuthorizationManager { auth: Mono<Authentication>, ctx: AuthorizationContext ->
-                auth
-                    .map {it as CurrentUserAuthentication }
-                    .flatMap { currentUserAuthentication: CurrentUserAuthentication ->
-                        val a = ctx.variables["organization-id"]?.toString()
-                        val organizationId: OrganizationId = OrganizationId.fromString(a)
-                        println(ctx.variables)
-                        println(currentUserAuthentication)
-                        runBlocking { organizationRoles.getUnsafeUserOrganization(userId = currentUserAuthentication.principal.id, organizationId = organizationId) }
-                            .toMono()
-                    }
-                    .map {
-                        println(it)
-                        it != null
-                    }
-                    .map { granted: Boolean? ->
-                        AuthorizationDecision(
-                            granted!!
-                        )
-                    }
+                auth.map { AuthorizationDecision(it is CurrentUserOrganizationAuthentication) }
             }
 
         return http
             .authorizeExchange()
             .pathMatchers(HttpMethod.GET, *permittedGetPaths).permitAll()
             .pathMatchers(HttpMethod.POST, *permittedPostPaths).permitAll()
-            //TODO
-            .pathMatchers("/organizations/{organization-id}/**").access(am)
-//            .access("@webSecurity.checkUserId(authentication,#userId)")
-//                https://docs.spring.io/spring-security/site/docs/current/reference/html5/#authorization
+            // https://docs.spring.io/spring-security/site/docs/current/reference/html5/#authorization
+            .pathMatchers("/organizations/{organization-id}/**").access(organizationAuthorizationManager)
             .anyExchange().authenticated()
             .and()
             .addFilterAt(authenticationWebFilter, SecurityWebFiltersOrder.AUTHENTICATION)

@@ -1,8 +1,8 @@
 package com.andreformento.money.organization.repository
 
 import com.andreformento.money.organization.Organization
-import com.andreformento.money.organization.OrganizationRegister
 import com.andreformento.money.organization.OrganizationId
+import com.andreformento.money.organization.OrganizationRegister
 import org.springframework.data.annotation.Id
 import org.springframework.data.relational.core.mapping.Column
 import org.springframework.data.relational.core.mapping.Table

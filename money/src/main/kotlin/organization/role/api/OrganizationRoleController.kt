@@ -5,7 +5,7 @@ import com.andreformento.money.organization.role.OrganizationRoleCreation
 import com.andreformento.money.organization.role.OrganizationRoleFacade
 import com.andreformento.money.organization.role.Role
 import com.andreformento.money.organization.toOrganizationId
-import com.andreformento.money.user.security.CurrentUserAuthentication
+import com.andreformento.money.user.security.CurrentUserOrganizationAuthentication
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import java.net.URI
@@ -18,7 +18,7 @@ class OrganizationRoleController(private val organizationRoleFacade: Organizatio
 
     @PostMapping
     suspend fun create(
-        authentication: CurrentUserAuthentication,
+        authentication: CurrentUserOrganizationAuthentication,
         @PathVariable("organization-id") organizationId: String,
         @RequestBody organizationRoleCreationRequest: OrganizationRoleCreationRequest,
     ): ResponseEntity<OrganizationRoleCreated> {
@@ -35,7 +35,7 @@ class OrganizationRoleController(private val organizationRoleFacade: Organizatio
 
     @DeleteMapping("/{organization-role-id}")
     suspend fun delete(
-        authentication: CurrentUserAuthentication,
+        authentication: CurrentUserOrganizationAuthentication,
         @PathVariable("organization-id") organizationId: String,
     ): ResponseEntity<Any> {
         val deletedCount = organizationRoleFacade.delete(

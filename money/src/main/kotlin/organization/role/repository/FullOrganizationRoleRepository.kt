@@ -2,7 +2,6 @@ package com.andreformento.money.organization.role.repository
 
 import com.andreformento.money.organization.OrganizationId
 import com.andreformento.money.organization.role.OrganizationRoleId
-import com.andreformento.money.user.UserId
 import org.springframework.data.r2dbc.repository.Query
 import org.springframework.data.repository.kotlin.CoroutineCrudRepository
 import org.springframework.data.repository.query.Param
@@ -25,12 +24,12 @@ internal interface FullOrganizationRoleRepository :
           FROM organization o
     INNER JOIN organization_role orr on orr.organization_id = o.id
     INNER JOIN users u on u.id = orr.user_id
-         WHERE orr.user_id = :user_id
+         WHERE u.email = :user_email
            AND o.id = :organization_id
         """
     )
     suspend fun getUnsafeUserOrganization(
-        @Param("user_id") userId: UserId,
+        @Param("user_email") userEmail: String,
         @Param("organization_id") organizationId: OrganizationId,
     ): FullOrganizationRoleEntity?
 
