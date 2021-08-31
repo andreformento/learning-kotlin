@@ -47,37 +47,6 @@ class SecurityConfiguration {
         "/user/auth/login",
     )
 
-/*
-    @Bean
-//    @Profile("authorization")
-    fun authorization(http: ServerHttpSecurity): SecurityWebFilterChain? {
-        val am =
-            ReactiveAuthorizationManager { auth: Mono<Authentication>, ctx: AuthorizationContext ->
-                auth
-                    .map { authentication: Authentication ->
-                        val author = ctx.variables["author"]
-                        val matchesAuthor = authentication.name == author
-                        val isAdmin = authentication.authorities.stream()
-                            .anyMatch { ga: GrantedAuthority? -> ga!!.authority.contains("ROLE_ADMIN") }
-                        matchesAuthor || isAdmin
-                    }
-                    .map { granted: Boolean? ->
-                        AuthorizationDecision(
-                            granted!!
-                        )
-                    }
-            }
-        return http
-            .httpBasic()
-            .and()
-            .authorizeExchange()
-            .pathMatchers("/books/{author}").access(am)
-            .anyExchange().hasRole("ADMIN")
-            .and()
-            .build()
-    }
-*/
-
     @Bean
     fun securityWebFilterChain(
         http: ServerHttpSecurity,
