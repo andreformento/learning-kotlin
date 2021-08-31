@@ -9,6 +9,7 @@ import org.springframework.boot.web.server.LocalServerPort
 import org.springframework.http.HttpStatus
 import org.springframework.util.LinkedMultiValueMap
 import org.springframework.web.reactive.function.client.WebClient
+import kotlin.random.Random
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 internal class UserControllerTest {
@@ -19,39 +20,47 @@ internal class UserControllerTest {
     @Test
     fun `can obtain own user details when logged in`() {
         // arrange
+        // TODO this is very wrong!!!
+        val email = "new@example.com" + Random.nextInt()
+
         val webClient = WebClient
             .builder()
             .baseUrl("http://localhost:${serverPort}")
             .build()
 
         // act
-        val signupResponse = webClient.put()
+        val signupResponse = webClient
+            .post()
             .uri("/user/auth/signup")
-            .bodyValue(UserSignupCreation(name = "user test", email = "new@example.com", password = "pw"))
+            .bodyValue(UserSignupCreation(name = "user test", email = email, password = "pw"))
             .exchange()
             .block() ?: throw RuntimeException("Should have gotten a signup response")
-        println(signupResponse)
 
-        val loginResponse = webClient.post()
+        assertThat(signupResponse.statusCode()).isEqualTo(HttpStatus.NO_CONTENT)
+
+        val loginResponse = webClient
+            .post()
             .uri("/user/auth/login")
-            .bodyValue(UserCredentials("new@example.com", "pw"))
+            .bodyValue(UserCredentials(email, "pw"))
             .exchange()
             .block() ?: throw RuntimeException("Should have gotten a login response")
         val responseCookies = loginResponse.cookies()
             .map { it.key to it.value.map { cookie -> cookie.value } }
             .toMap()
 
-        val response = webClient.get()
+        val response = webClient
+            .get()
             .uri("/user")
             .cookies { it.addAll(LinkedMultiValueMap(responseCookies)) }
             .exchange()
             .block()
 
         // assert
-        assertThat(response?.statusCode()).isEqualTo(HttpStatus.OK)
-        assertThat(
-            response?.bodyToFlux(LoggedUserResponse::class.java)?.blockFirst()
-        ).isEqualTo(LoggedUserResponse(name = "user test", email = "new@example.com"))
+        assertThat(response?.statusCode())
+            .isEqualTo(HttpStatus.OK)
+
+        assertThat(response?.bodyToMono(LoggedUserResponse::class.java)?.block())
+            .isEqualTo(LoggedUserResponse(name = "user test", email = email))
     }
 
 }
