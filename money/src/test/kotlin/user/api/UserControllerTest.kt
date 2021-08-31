@@ -16,10 +16,11 @@ internal class UserControllerTest {
     @LocalServerPort
     var serverPort: Int? = null
 
-//    @Test
+    @Test
     fun `can obtain own user details when logged in`() {
         // arrange
-        val webClient = WebClient.builder()
+        val webClient = WebClient
+            .builder()
             .baseUrl("http://localhost:${serverPort}")
             .build()
 
