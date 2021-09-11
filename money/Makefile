@@ -9,9 +9,9 @@ database:
 	            postgres:13.3
 
 wait-for-database: database
-	@until docker run -it \
+	@until docker run --rm -it \
                       -e PGPASSWORD=password \
-                      --rm --link \
+                      --link \
                       database:pg \
                       postgres:13.3 psql -U user -h pg -c "select 1" -d mydb; do sleep 0.5; done
 
