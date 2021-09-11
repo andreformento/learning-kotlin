@@ -6,8 +6,8 @@ import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient
 import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.core.ParameterizedTypeReference
 import org.springframework.test.web.reactive.server.WebTestClient
+import org.springframework.test.web.reactive.server.expectBody
 import org.springframework.test.web.reactive.server.returnResult
 import org.springframework.util.LinkedMultiValueMap
 import kotlin.random.Random
@@ -56,8 +56,7 @@ class UserControllerTest {
             .cookies { it.addAll(LinkedMultiValueMap(mapOf("X-Auth" to listOf(xAuth)))) }
             .exchange()
             .expectStatus().isOk
-            .expectBody(LoggedUserResponse::class.java)
-//            .isEqualTo(LoggedUserResponse(name = "user test", email = email))
+            .expectBody<LoggedUserResponse>().isEqualTo(LoggedUserResponse(name = "user test", email = email))
     }
 
 }
