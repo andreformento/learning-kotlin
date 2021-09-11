@@ -6,11 +6,18 @@ database:
 	            -e POSTGRES_DB=mydb \
 	            -e POSTGRES_USER=user \
 	            -e POSTGRES_PASSWORD=password \
-	            -v $$(pwd)/migrations/:/docker-entrypoint-initdb.d/:ro \
 	            postgres:13.3
 
 wait-for-database: database
 	@until docker run -it -e PGPASSWORD=password --rm --link database:pg postgres:13.3 psql -U user -h pg -c "select 1" -d mydb; do sleep 0.5; done
+
+migrate-database: wait-for-database
+	@docker run --rm \
+                --link database:pg \
+                -v $$(pwd)/migrations/:/flyway/sql:ro \
+                -e FLYWAY_EDITION=community \
+                flyway/flyway:7.15.0 \
+                -url=jdbc:postgresql://database:5432/mydb -schemas=public -user=user -password=password migrate
 
 run: wait-for-database
 	@./gradlew bootRun
