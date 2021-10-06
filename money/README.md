@@ -60,6 +60,7 @@ Response header `Location` contains the new ID
 - https://docs.spring.io/spring-framework/docs/current/reference/html/languages.html#controllers
 - https://www.baeldung.com/micrometer
 - https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#actuator.metrics.export.prometheus
+- https://spring.io/blog/2017/08/01/spring-framework-5-kotlin-apis-the-functional-way
 
 ## TODO
 - sec 
