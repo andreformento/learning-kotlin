@@ -6,5 +6,6 @@ destroy:
 create:
 	@docker-compose up -d
 	@timeout 30 bash -c 'printf "solr "; while [[ "$$(curl -s -o /dev/null -w ''%{http_code}'' http://localhost:8983/solr/)" != "200" ]]; do sleep 0.5; printf "."; done; echo "Done! http://localhost:8983/solr/"' || (echo "Oops! Something is wrong. See details with 'docker logs solr'" && false)
+	@docker run --rm -v ${PWD}/sample-data:/sample-data --network=host solr:8.10.0 post -c products /sample-data/products.csv
 
 recreate: destroy create
