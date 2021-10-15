@@ -33,9 +33,7 @@ abstract class IntegrationTest {
         @DynamicPropertySource
         @JvmStatic
         fun setProperties(registry: DynamicPropertyRegistry) {
-//            registry.add("spring.datasource.url", solrContainer::getJdbcUrl)
-//            registry.add("spring.datasource.username", solrContainer::getUsername)
-//            registry.add("spring.datasource.password", solrContainer::getPassword)
+            registry.add("solr.url") { "http://${solrContainer.containerIpAddress}:${solrContainer.solrPort}/solr" }
         }
 
         @BeforeAll
