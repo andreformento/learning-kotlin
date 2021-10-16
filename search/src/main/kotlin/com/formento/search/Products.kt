@@ -26,7 +26,7 @@ class Products(private val solrClient: SolrClient, private val meterRegistry: Me
 
     suspend fun search(searchParams: SearchParams): ProductSearchResult {
         val solrQuery = SolrQuery().apply {
-            query = searchParams.query
+            query = "title:${searchParams.query}"
             setParam("q.op", "OR")
         }
 

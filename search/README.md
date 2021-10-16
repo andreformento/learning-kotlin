@@ -4,5 +4,7 @@
 - [metrics](https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#actuator.metrics.export.prometheus)
 
 ## Endpoints
+
 - http://localhost:8080/actuator/prometheus
 - http://localhost:8080/actuator/health
+- http://localhost:8080/products?q=first-second
