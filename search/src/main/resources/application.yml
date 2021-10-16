@@ -12,3 +12,6 @@ solr:
 #    port: 8983
 
 logging.level.root: INFO
+
+management:
+  endpoints.web.exposure.include: "health,prometheus"
