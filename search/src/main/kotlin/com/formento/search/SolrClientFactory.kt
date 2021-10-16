@@ -34,6 +34,7 @@ class SolrClientFactory {
             Http2SolrClient
                 .Builder("http://${solrProperties.standalone.host}:${solrProperties.standalone.port}/solr")
                 .build()
+                .also { it.ping("products") }
         }
 
 }
