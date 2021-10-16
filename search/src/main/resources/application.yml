@@ -1,3 +1,11 @@
+spring.jackson.property-naming-strategy: SNAKE_CASE
+
 solr:
-  host: localhost
-  port: 8983
+  cluster:
+    zk-hosts:
+      - localhost:2181
+      - localhost:2182
+      - localhost:2182
+    zk-chroot: /solr8
+
+logging.level.root: INFO
