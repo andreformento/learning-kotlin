@@ -6,6 +6,9 @@ solr:
       - localhost:2181
       - localhost:2182
       - localhost:2182
-    zk-chroot: /solr8
+#    zk-chroot: /solr8
+#  standalone:
+#    host: localhost
+#    port: 8983
 
 logging.level.root: INFO
