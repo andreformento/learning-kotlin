@@ -90,5 +90,19 @@ services:
     networks:
       - solr
 
+  solr-schema:
+    image: solr:8.10.0
+    entrypoint: bash
+    command:
+      - /solr/setup.sh
+    volumes:
+      - ./solr:/solr:ro
+    networks:
+      - solr
+    depends_on:
+      - solr1
+      - solr2
+      - solr3
+
 networks:
   solr:
