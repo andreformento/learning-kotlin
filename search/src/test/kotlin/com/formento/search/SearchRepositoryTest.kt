@@ -25,34 +25,57 @@ import java.io.File
 class SearchRepositoryTest {
 
     companion object {
+        private val instance: KDockerComposeContainer by lazy { defineDockerCompose()}
 
-        @ClassRule
-        val solrContainer = SolrContainer(DockerImageName.parse("solr:8.10.0"))
+        class KDockerComposeContainer(file: File) : DockerComposeContainer<KDockerComposeContainer>(file)
 
-//        @ClassRule
-//        var environment: DockerComposeContainer<KDockerComposeContainer> =
-//            DockerComposeContainer(File("docker-compose.yml"))
-//                .withExposedService("redis_1", REDIS_PORT)
-//                .withExposedService("elasticsearch_1", ELASTICSEARCH_PORT)
-
-        @DynamicPropertySource
-        @JvmStatic
-        fun setProperties(registry: DynamicPropertyRegistry) {
-            registry.add("solr.url") { "http://${solrContainer.containerIpAddress}:${solrContainer.solrPort}/solr" }
-        }
+        private fun defineDockerCompose() = KDockerComposeContainer(File("docker-compose.yml"))
+//            .withExposedService("solr1_1",8983)
 
         @BeforeAll
         @JvmStatic
         internal fun beforeAll() {
-            solrContainer.start()
+            instance.start()
+//            println(instance.getServicePort("solr1_1",8981))
         }
 
         @AfterAll
         @JvmStatic
         internal fun afterAll() {
-            solrContainer.close()
+            instance.stop()
         }
     }
+
+
+//    companion object {
+//
+//        @ClassRule
+//        val solrContainer = SolrContainer(DockerImageName.parse("solr:8.10.0"))
+//
+////        @ClassRule
+////        var environment: DockerComposeContainer<KDockerComposeContainer> =
+////            DockerComposeContainer(File("docker-compose.yml"))
+////                .withExposedService("redis_1", REDIS_PORT)
+////                .withExposedService("elasticsearch_1", ELASTICSEARCH_PORT)
+//
+//        @DynamicPropertySource
+//        @JvmStatic
+//        fun setProperties(registry: DynamicPropertyRegistry) {
+//            registry.add("solr.url") { "http://${solrContainer.containerIpAddress}:${solrContainer.solrPort}/solr" }
+//        }
+//
+//        @BeforeAll
+//        @JvmStatic
+//        internal fun beforeAll() {
+//            solrContainer.start()
+//        }
+//
+//        @AfterAll
+//        @JvmStatic
+//        internal fun afterAll() {
+//            solrContainer.close()
+//        }
+//    }
 
 
     @Test
