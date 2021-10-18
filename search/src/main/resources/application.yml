@@ -1,6 +1,9 @@
 spring.jackson.property-naming-strategy: SNAKE_CASE
 
 solr:
+  warmup-attempt:
+    max: 3
+    sleep: 2s
   cluster:
     zk-hosts:
       - localhost:2181
