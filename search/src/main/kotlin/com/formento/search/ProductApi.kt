@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RestController
 class ProductApi(private val products: Products) {
 
     @GetMapping
-    suspend fun search(@RequestParam("q") query: String): ProductSearchResult =
+    suspend fun search(@RequestParam("q") query: String?): ProductSearchResult =
         products.search(SearchParams(query = query))
 
 }

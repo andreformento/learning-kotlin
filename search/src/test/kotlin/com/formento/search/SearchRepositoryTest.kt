@@ -1,11 +1,13 @@
 package com.formento.search
 
+import kotlinx.coroutines.runBlocking
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.ClassRule
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.annotation.DirtiesContext
 import org.springframework.test.context.ActiveProfiles
@@ -78,9 +80,14 @@ class SearchRepositoryTest {
 //    }
 
 
+    @Autowired
+    lateinit var repo: Products
+
     @Test
-    fun `should search`() {
-        assertThat("a").isEqualTo("a")
+    fun `should search`(): Unit = runBlocking {
+        val searchResult = repo.search(SearchParams(query = "First"))
+
+        assertThat(searchResult.hits).isGreaterThan(0)
     }
 
 }

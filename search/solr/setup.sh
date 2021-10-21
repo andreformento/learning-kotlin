@@ -7,7 +7,7 @@ wait_for_solr() {
 
   RETRY_COUNT=0
   while [[ "$(curl -s -o /dev/null -w ''%{http_code}'' $SOLR_URL)" != "200" ]]; do
-    if [ $RETRY_COUNT -gt 30 ]; then
+    if [ $RETRY_COUNT -gt 60 ]; then
        echo "Oops! Something is wrong. See details with 'docker-compose logs -f solr3'"
        exit 1
     fi
