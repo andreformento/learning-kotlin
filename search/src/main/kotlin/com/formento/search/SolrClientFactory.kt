@@ -60,12 +60,10 @@ class SolrHealthCheck(
 
 
     fun isAlive(): Boolean {
-        val queryRequest = SolrQuery()
-            .apply { setParam("q", "*:*") }
-            .let { QueryRequest(it) }
-
         val check = {
-            queryRequest
+            SolrQuery()
+                .apply { setParam("q", "*:*") }
+                .let { QueryRequest(it) }
                 .process(solrClient, "products")
                 .results
                 .numFound > 0

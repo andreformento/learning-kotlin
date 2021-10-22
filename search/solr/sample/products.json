@@ -1,10 +1,12 @@
 [
   {
     "id": "a1",
-    "title": "First"
+    "title": "First",
+    "title_s": "First"
   },
   {
     "id": "b2",
-    "title": "Second"
+    "title": "Second",
+    "title_s": "Second"
   }
 ]
