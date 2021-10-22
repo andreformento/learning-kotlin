@@ -61,7 +61,7 @@ class SolrHealthCheck(
 
     fun isAlive(): Boolean {
         val queryRequest = SolrQuery()
-            .apply { setParam("q.alt", "*:*") }
+            .apply { setParam("q", "*:*") }
             .let { QueryRequest(it) }
 
         val check = {
