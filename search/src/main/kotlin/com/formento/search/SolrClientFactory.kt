@@ -13,7 +13,6 @@ import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import java.time.Duration
 import java.util.*
-import kotlin.RuntimeException
 
 
 data class SolrClusterProperties(val zkHosts: List<String>, val zkChroot: String?)
@@ -28,12 +27,13 @@ data class SolrProperties(
     val standalone: SolrStandaloneProperties?,
 )
 
-class SolrHealthCheck(
+private data class CreatedSolrClient(val solrClient: SolrClient, val connectFunction: () -> Boolean)
+
+private class SolrHealthCheck(
     private val warmupAttempt: SolrWarmupAttemptProperties,
-    private val solrClient: SolrClient,
+    private val createdSolrClient: CreatedSolrClient,
 ) {
     private fun isAlive(
-        warmupAttempt: SolrWarmupAttemptProperties,
         attemptCount: Int,
         isHealth: () -> Boolean
     ): Boolean =
@@ -44,7 +44,7 @@ class SolrHealthCheck(
                 if (isHealth()) {
                     true
                 } else {
-                    isAlive(warmupAttempt, attemptCount - 1, isHealth)
+                    isAlive(attemptCount - 1, isHealth)
                 }
             } catch (e: Exception) {
                 if (attemptCount <= 0) {
@@ -53,24 +53,25 @@ class SolrHealthCheck(
                 } else {
                     SolrClientFactory.LOGGER.error("Retry $attemptCount to run Solr health check", e)
                     Thread.sleep(warmupAttempt.sleep.toMillis())
-                    isAlive(warmupAttempt, attemptCount - 1, isHealth)
+                    isAlive(attemptCount - 1, isHealth)
                 }
             }
         }
 
 
-    fun isAlive(): Boolean {
-        val check = {
-            SolrQuery()
-                .apply { setParam("q", "*:*") }
-                .let { QueryRequest(it) }
-                .process(solrClient, "products")
-                .results
-                .numFound > 0
+    fun isAlive(): Boolean =
+        if (isAlive(warmupAttempt.max, createdSolrClient.connectFunction)) {
+            isAlive(warmupAttempt.max) {
+                SolrQuery()
+                    .apply { setParam("q", "*:*") }
+                    .let { QueryRequest(it) }
+                    .process(createdSolrClient.solrClient, "products")
+                    .results
+                    .numFound > 0
+            }
+        } else {
+            false
         }
-
-        return isAlive(warmupAttempt, warmupAttempt.max, check)
-    }
 }
 
 @Configuration
@@ -85,15 +86,29 @@ class SolrClientFactory {
             CloudSolrClient
                 .Builder(solrProperties.cluster!!.zkHosts, Optional.ofNullable(solrProperties.cluster!!.zkChroot))
                 .build()
+                .let { solrClient ->
+                    CreatedSolrClient(solrClient) {
+                        solrClient.connect()
+                        true
+                    }
+                }
+
         } else {
             Http2SolrClient
                 .Builder("http://${solrProperties.standalone.host}:${solrProperties.standalone.port}/solr")
                 .build()
+                .let { solrClient ->
+                    CreatedSolrClient(solrClient) {
+                        solrClient.ping()
+                        true
+                    }
+                }
         }
             .also {
-                if (!SolrHealthCheck(warmupAttempt = solrProperties.warmupAttempt, it).isAlive()) {
+                if (!SolrHealthCheck(warmupAttempt = solrProperties.warmupAttempt, createdSolrClient = it).isAlive()) {
                     throw RuntimeException("Solr is not alive")
                 }
             }
+            .solrClient
 
 }
