@@ -3,7 +3,7 @@ solr-destroy:
 	@docker-compose rm -f
 
 solr-create:
-	@docker-compose up -d
+	@docker-compose up -d --build
 	@docker-compose logs -f solr-schema
 
 solr-recreate: solr-destroy solr-create
