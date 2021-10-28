@@ -4,7 +4,7 @@ solr:
   collection:
     name: products
   warmup-attempt:
-    max: 6
+    max: 12
     sleep: 5s
 #  cluster:
 #    zk-hosts:

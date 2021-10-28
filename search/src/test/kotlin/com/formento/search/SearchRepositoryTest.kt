@@ -27,18 +27,31 @@ import java.io.File
 class SearchRepositoryTest {
 
     companion object {
+        private const val solrPort = 18983
         private val instance: KDockerComposeContainer by lazy { defineDockerCompose()}
 
-        class KDockerComposeContainer(file: File) : DockerComposeContainer<KDockerComposeContainer>(file)
+        class KDockerComposeContainer(files: List<File>) : DockerComposeContainer<KDockerComposeContainer>(files)
 
-        private fun defineDockerCompose() = KDockerComposeContainer(File("docker-compose.yml"))
-//            .withExposedService("solr1_1",8983)
+        private fun defineDockerCompose() = KDockerComposeContainer(
+            listOf(File("docker-compose.yml"), File("docker-compose.test.yml"))
+        )
+
+        @DynamicPropertySource
+        @JvmStatic
+        fun setProperties(registry: DynamicPropertyRegistry) {
+//            registry.add("solr.url") { "http://${instance.getContainerByServiceName()}:${IntegrationTest.solrContainer.solrPort}/solr" }
+            val solrContainer = instance.getContainerByServiceName("solr_1").orElse(null)
+
+            registry.add("solr.standalone.host") { solrContainer.containerIpAddress }
+            registry.add("solr.standalone.port") { solrContainer.boundPortNumbers.first() }
+//            registry.add("solr.url") { "http://${solrContainer.host}:${solrContainer.boundPortNumbers.first()}/solr" }
+        }
 
         @BeforeAll
         @JvmStatic
         internal fun beforeAll() {
             instance.start()
-//            println(instance.getServicePort("solr1_1",8981))
+//            println(instance.getContainerByServiceName("solr_1").orElse(null).boundPortNumbers.first())
         }
 
         @AfterAll
