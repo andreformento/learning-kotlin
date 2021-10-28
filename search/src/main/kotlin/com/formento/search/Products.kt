@@ -38,7 +38,7 @@ class Products(private val solrClient: SolrClient, private val meterRegistry: Me
 
         val queryResponse = withContext(Dispatchers.IO) {
             meterRegistry.timer("product-search").recordCallable {
-                req.process(solrClient, "products")
+                req.process(solrClient)
             }
         }
 

@@ -3,8 +3,9 @@ package com.formento.search
 import org.apache.solr.client.solrj.SolrClient
 import org.apache.solr.client.solrj.SolrQuery
 import org.apache.solr.client.solrj.impl.CloudSolrClient
-import org.apache.solr.client.solrj.impl.Http2SolrClient
+import org.apache.solr.client.solrj.impl.HttpSolrClient
 import org.apache.solr.client.solrj.request.QueryRequest
+import org.apache.solr.client.solrj.response.SolrPingResponse
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.boot.context.properties.ConfigurationProperties
@@ -14,7 +15,7 @@ import org.springframework.context.annotation.Configuration
 import java.time.Duration
 import java.util.*
 
-
+data class SolrCollectionProperties(val name: String)
 data class SolrClusterProperties(val zkHosts: List<String>, val zkChroot: String?)
 data class SolrWarmupAttemptProperties(val max: Int, val sleep: Duration)
 data class SolrStandaloneProperties(val host: String, val port: Int)
@@ -22,12 +23,13 @@ data class SolrStandaloneProperties(val host: String, val port: Int)
 @ConstructorBinding
 @ConfigurationProperties(prefix = "solr")
 data class SolrProperties(
+    val collection: SolrCollectionProperties,
     val warmupAttempt: SolrWarmupAttemptProperties,
     val cluster: SolrClusterProperties?,
     val standalone: SolrStandaloneProperties?,
 )
 
-private data class CreatedSolrClient(val solrClient: SolrClient, val connectFunction: () -> Boolean)
+private data class CreatedSolrClient(val solrClient: SolrClient, val pingFunction: () -> SolrPingResponse)
 
 private class SolrHealthCheck(
     private val warmupAttempt: SolrWarmupAttemptProperties,
@@ -58,51 +60,55 @@ private class SolrHealthCheck(
             }
         }
 
+    private fun ping() =
+        createdSolrClient
+            .pingFunction()
+            .response
+            .get("status")
+            .equals("OK")
+
+    private fun check() =
+        SolrQuery()
+            .apply { setParam("q", "*:*") }
+            .let { QueryRequest(it) }
+            .process(createdSolrClient.solrClient)
+            .results
+            .numFound > 0
 
     fun isAlive(): Boolean =
-        if (isAlive(warmupAttempt.max, createdSolrClient.connectFunction)) {
-            isAlive(warmupAttempt.max) {
-                SolrQuery()
-                    .apply { setParam("q", "*:*") }
-                    .let { QueryRequest(it) }
-                    .process(createdSolrClient.solrClient, "products")
-                    .results
-                    .numFound > 0
-            }
+        if (isAlive(warmupAttempt.max, ::ping)) {
+            isAlive(warmupAttempt.max, ::check)
         } else {
             false
         }
 }
 
 @Configuration
-class SolrClientFactory {
+class SolrClientFactory(private val solrProperties: SolrProperties) {
     companion object {
         val LOGGER: Logger = LoggerFactory.getLogger(SolrClientFactory::class.java)
     }
 
     @Bean
-    fun createSolrClient(solrProperties: SolrProperties): SolrClient =
+    fun createSolrClient(): SolrClient =
         if (solrProperties.standalone == null) {
             CloudSolrClient
                 .Builder(solrProperties.cluster!!.zkHosts, Optional.ofNullable(solrProperties.cluster!!.zkChroot))
                 .build()
                 .let { solrClient ->
+                    solrClient.defaultCollection = solrProperties.collection.name
+
                     CreatedSolrClient(solrClient) {
                         solrClient.connect()
-                        true
+                        solrClient.ping()
                     }
                 }
 
         } else {
-            Http2SolrClient
-                .Builder("http://${solrProperties.standalone.host}:${solrProperties.standalone.port}/solr")
+            HttpSolrClient
+                .Builder("http://${solrProperties.standalone.host}:${solrProperties.standalone.port}/solr/${solrProperties.collection.name}")
                 .build()
-                .let { solrClient ->
-                    CreatedSolrClient(solrClient) {
-                        solrClient.ping()
-                        true
-                    }
-                }
+                .let { solrClient -> CreatedSolrClient(solrClient) { solrClient.ping() } }
         }
             .also {
                 if (!SolrHealthCheck(warmupAttempt = solrProperties.warmupAttempt, createdSolrClient = it).isAlive()) {

@@ -1,16 +1,18 @@
 spring.jackson.property-naming-strategy: SNAKE_CASE
 
 solr:
+  collection:
+    name: products
   warmup-attempt:
     max: 6
     sleep: 5s
-  cluster:
-    zk-hosts:
-      - localhost:2181
-#    zk-chroot: /solr8
-#  standalone:
-#    host: localhost
-#    port: 8983
+#  cluster:
+#    zk-hosts:
+#      - localhost:2181
+##    zk-chroot: /solr8
+  standalone:
+    host: localhost
+    port: 8983
 
 logging.level.root: INFO
 
