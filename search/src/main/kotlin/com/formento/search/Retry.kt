@@ -25,14 +25,9 @@ class Retry(
                     tryToRun(attemptCount - 1, tryFunction)
                 }
             } catch (e: Exception) {
-                if (attemptCount <= 0) {
-                    LOGGER.error("Cannot run check after $tryAtLeast retries", e)
-                    false
-                } else {
-                    LOGGER.error("Retry $attemptCount to run check", e)
-                    Thread.sleep(sleepTime.toMillis())
-                    tryToRun(attemptCount - 1, tryFunction)
-                }
+                LOGGER.error("Retry $attemptCount to run check", e)
+                Thread.sleep(sleepTime.toMillis())
+                tryToRun(attemptCount - 1, tryFunction)
             }
         }
 
