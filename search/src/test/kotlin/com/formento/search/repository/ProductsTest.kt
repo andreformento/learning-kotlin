@@ -1,5 +1,6 @@
-package com.formento.search
+package com.formento.search.repository
 
+import com.formento.search.api.ProductSearchParams
 import kotlinx.coroutines.runBlocking
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.AfterAll
@@ -20,7 +21,7 @@ import java.io.File
 @ActiveProfiles("test")
 @ExtendWith(SpringExtension::class)
 @DirtiesContext
-class SearchRepositoryTest {
+class ProductsTest {
 
     companion object {
         private val instance: KDockerComposeContainer by lazy { defineDockerCompose() }
@@ -58,7 +59,7 @@ class SearchRepositoryTest {
 
     @Test
     fun `should search`(): Unit = runBlocking {
-        val searchResult = repo.search(SearchParams(query = "First"))
+        val searchResult = repo.search(ProductSearchParams(query = "First"))
 
         assertThat(searchResult.hits).isGreaterThan(0)
     }

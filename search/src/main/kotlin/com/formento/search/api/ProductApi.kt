@@ -1,5 +1,6 @@
-package com.formento.search
+package com.formento.search.api
 
+import com.formento.search.repository.Products
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
@@ -11,6 +12,6 @@ class ProductApi(private val products: Products) {
 
     @GetMapping
     suspend fun search(@RequestParam("q") query: String?): ProductSearchResult =
-        products.search(SearchParams(query = query))
+        products.search(ProductSearchParams(query = query))
 
 }

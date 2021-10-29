@@ -1,4 +1,4 @@
-package com.formento.search
+package com.formento.search.util
 
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
@@ -28,7 +28,7 @@ internal class RetryTest {
             if (++attemptCount == 2) {
                 true
             } else {
-                throw RuntimeException("fail on first time")
+                throw Throwable("fail on first time")
             }
         }
 
@@ -38,7 +38,7 @@ internal class RetryTest {
     @Test
     fun `should not run on the second time when to fail on the first`() {
         val function: () -> Boolean = {
-            throw RuntimeException("fail on first time")
+            throw Throwable("fail on first time")
         }
 
         assertThat(Retry(sleepTime = Duration.ZERO, tryAtLeast = 2).tryToRun(function)).isFalse

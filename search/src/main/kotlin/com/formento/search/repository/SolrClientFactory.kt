@@ -1,5 +1,6 @@
-package com.formento.search
+package com.formento.search.repository
 
+import com.formento.search.util.Retry
 import org.apache.solr.client.solrj.SolrClient
 import org.apache.solr.client.solrj.SolrQuery
 import org.apache.solr.client.solrj.impl.CloudSolrClient

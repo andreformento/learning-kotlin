@@ -1,5 +1,8 @@
-package com.formento.search
+package com.formento.search.repository
 
+import com.formento.search.api.ProductDocument
+import com.formento.search.api.ProductSearchParams
+import com.formento.search.api.ProductSearchResult
 import io.micrometer.core.instrument.MeterRegistry
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -9,7 +12,6 @@ import org.apache.solr.client.solrj.SolrRequest
 import org.apache.solr.client.solrj.request.QueryRequest
 import org.apache.solr.client.solrj.response.QueryResponse
 import org.springframework.stereotype.Component
-
 
 fun QueryResponse.toModel() = ProductSearchResult(
     hits = results.numFound,
@@ -24,12 +26,12 @@ fun QueryResponse.toModel() = ProductSearchResult(
 @Component
 class Products(private val solrClient: SolrClient, private val meterRegistry: MeterRegistry) {
 
-    suspend fun search(searchParams: SearchParams): ProductSearchResult {
+    suspend fun search(productSearchParams: ProductSearchParams): ProductSearchResult {
         val solrQuery = SolrQuery().apply {
-            if (searchParams.query == null || searchParams.query.isEmpty()) {
+            if (productSearchParams.query == null || productSearchParams.query.isEmpty()) {
                 setParam("q.alt", "*:*")
             } else {
-                query = "title:${searchParams.query}"
+                query = "title:${productSearchParams.query}"
             }
             setParam("q.op", "OR")
         }

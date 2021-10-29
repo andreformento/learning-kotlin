@@ -1,4 +1,4 @@
-package com.formento.search
+package com.formento.search.util
 
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -22,9 +22,11 @@ class Retry(
                 if (tryFunction()) {
                     true
                 } else {
+                    LOGGER.error("Retry $attemptCount to run check")
+                    Thread.sleep(sleepTime.toMillis())
                     tryToRun(attemptCount - 1, tryFunction)
                 }
-            } catch (e: Exception) {
+            } catch (e: Throwable) {
                 LOGGER.error("Retry $attemptCount to run check", e)
                 Thread.sleep(sleepTime.toMillis())
                 tryToRun(attemptCount - 1, tryFunction)
