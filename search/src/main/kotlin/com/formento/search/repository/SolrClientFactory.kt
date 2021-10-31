@@ -4,6 +4,7 @@ import com.formento.search.util.Retry
 import org.apache.solr.client.solrj.SolrClient
 import org.apache.solr.client.solrj.SolrQuery
 import org.apache.solr.client.solrj.impl.CloudSolrClient
+import org.apache.solr.client.solrj.impl.Http2SolrClient
 import org.apache.solr.client.solrj.impl.HttpSolrClient
 import org.apache.solr.client.solrj.request.QueryRequest
 import org.apache.solr.client.solrj.response.SolrPingResponse
@@ -79,7 +80,7 @@ class SolrClientFactory(private val solrProperties: SolrProperties) {
                 }
 
         } else {
-            HttpSolrClient
+            Http2SolrClient
                 .Builder("http://${solrProperties.standalone.host}:${solrProperties.standalone.port}/solr/${solrProperties.collection.name}")
                 .build()
                 .let { solrClient -> CreatedSolrClient(solrClient) { solrClient.ping() } }
