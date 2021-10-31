@@ -6,31 +6,26 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.test.annotation.DirtiesContext
-import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.DynamicPropertyRegistry
 import org.springframework.test.context.DynamicPropertySource
-import org.springframework.test.context.junit.jupiter.SpringExtension
 import org.testcontainers.containers.DockerComposeContainer
+import org.testcontainers.junit.jupiter.Testcontainers
 import java.io.File
 
 @SpringBootTest
-@ActiveProfiles("test")
-@ExtendWith(SpringExtension::class)
-@DirtiesContext
+@Testcontainers
 class ProductsTest {
 
     companion object {
-        private val instance: KDockerComposeContainer by lazy { defineDockerCompose() }
-
         class KDockerComposeContainer(files: List<File>) : DockerComposeContainer<KDockerComposeContainer>(files)
 
         private fun defineDockerCompose() = KDockerComposeContainer(
             listOf(File("docker-compose.yml"), File("docker-compose.test.yml"))
         )
+
+        private val instance: KDockerComposeContainer by lazy { defineDockerCompose() }
 
         @DynamicPropertySource
         @JvmStatic
