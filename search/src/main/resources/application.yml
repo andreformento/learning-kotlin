@@ -1,0 +1,20 @@
+spring.jackson.property-naming-strategy: SNAKE_CASE
+
+solr:
+  collection:
+    name: products
+  warmup-attempt:
+    try-at-least: 12
+    sleep: 5s
+#  cluster:
+#    zk-hosts:
+#      - localhost:2181
+##    zk-chroot: /solr8
+  standalone:
+    host: localhost
+    port: 8983
+
+logging.level.root: INFO
+
+management:
+  endpoints.web.exposure.include: "health,prometheus"

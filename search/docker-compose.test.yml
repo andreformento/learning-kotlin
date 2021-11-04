@@ -1,0 +1,5 @@
+version: '3.7'
+services:
+  solr:
+    ports:
+      - "18983:8983"

@@ -1,0 +1,12 @@
+{
+  "add-requesthandler": {
+    "name": "/mypath",
+    "class": "solr.DumpRequestHandler",
+    "defaults": {
+      "x": "y",
+      "a": "b",
+      "rows": 10
+    },
+    "useParams": "x"
+  }
+}

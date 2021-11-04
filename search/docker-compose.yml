@@ -1,0 +1,38 @@
+version: '3.7'
+services:
+  solr:
+    image: solr:8.10.0
+    environment:
+      - ZK_HOST=zoo:2181
+    networks:
+      - solr
+    depends_on:
+      - zoo
+
+  zoo:
+    image: zookeeper:3.6.2
+    restart: always
+    hostname: zoo
+    environment:
+      ZOO_MY_ID: 1
+      ZOO_SERVERS: server.1=zoo:2888:3888;2181
+      ZOO_4LW_COMMANDS_WHITELIST: mntr, conf, ruok
+      ZOO_CFG_EXTRA: "metricsProvider.className=org.apache.zookeeper.metrics.prometheus.PrometheusMetricsProvider metricsProvider.httpPort=7000 metricsProvider.exportJvmInfo=true"
+    networks:
+      - solr
+
+  solr-schema:
+    image: solr
+    build: solr/
+    entrypoint: bash
+    command:
+      - /solr/setup.sh
+    volumes:
+      - ./solr:/solr:ro
+    networks:
+      - solr
+    depends_on:
+      - solr
+
+networks:
+  solr:
