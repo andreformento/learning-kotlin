@@ -1,7 +1,7 @@
 package com.andreformento.sociallogin
 
-import org.springframework.http.ResponseEntity
-import org.springframework.security.core.Authentication
+import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken
+import org.springframework.security.oauth2.core.oidc.user.DefaultOidcUser
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
@@ -11,10 +11,11 @@ import org.springframework.web.bind.annotation.RestController
 class UserController {
 
     @GetMapping
-    suspend fun getCurrentUser(a: Authentication):Any {
-        println(a.principal)
+    suspend fun getCurrentUser(authentication: OAuth2AuthenticationToken):Any {
+        val user = authentication.principal as DefaultOidcUser
         return object {
-            val a = 0
+            val name = user.userInfo.fullName
+            val email = user.email
         }
     }
 
