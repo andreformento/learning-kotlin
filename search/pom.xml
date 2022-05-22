@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.5.5</version>
+        <version>2.7.0</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>com.formento</groupId>
@@ -14,8 +14,8 @@
     <name>search</name>
     <description>Search API</description>
     <properties>
-        <java.version>11</java.version>
-        <kotlin.version>1.5.31</kotlin.version>
+        <java.version>17</java.version>
+        <kotlin.version>1.6.21</kotlin.version>
         <testcontainers.version>1.16.0</testcontainers.version>
     </properties>
     <dependencies>
