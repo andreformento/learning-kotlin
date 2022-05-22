@@ -1,6 +1,6 @@
 # Application
 
-- Java 11
+- Java 17
 - Gradle
 - Kotlin
 - R2DBC (Postgres)
@@ -8,11 +8,16 @@
 - WebFlux
 - coroutines
 
-## Run
+## Commands
 
-- Run app 
+- Run app
   ```shell
   make run
+  ```
+
+- Test
+  ```shell
+  make test
   ```
 
 ## API

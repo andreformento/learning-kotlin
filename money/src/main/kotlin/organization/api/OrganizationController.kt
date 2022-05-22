@@ -37,7 +37,6 @@ class OrganizationController(private val organizationFacade: OrganizationFacade)
             authentication: CurrentUserOrganizationAuthentication,
             @PathVariable("organization-id") organizationId: String
     ): ResponseEntity<Organization> {
-        val currentUser = authentication.principal
         println("path variable::$organizationId")
         val foundOrganization = organizationFacade.findById(organizationId.toOrganizationId())
         println("found organization:$foundOrganization")
@@ -53,7 +52,6 @@ class OrganizationController(private val organizationFacade: OrganizationFacade)
         @PathVariable("organization-id") organizationId: String,
         @RequestBody organization: Organization
     ): ResponseEntity<Any> {
-        val currentUser = authentication.principal
         val updateResult =
             organizationFacade.update(
                 organizationId = organizationId.toOrganizationId(),
@@ -68,7 +66,6 @@ class OrganizationController(private val organizationFacade: OrganizationFacade)
         authentication: CurrentUserOrganizationAuthentication,
         @PathVariable("organization-id") organizationId: String
     ): ResponseEntity<Any> {
-        val currentUser = authentication.principal
         val deletedCount = organizationFacade.delete(organizationId.toOrganizationId())
         println("$deletedCount organizations deleted")
         return ResponseEntity.noContent().build()

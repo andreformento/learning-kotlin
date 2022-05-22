@@ -22,9 +22,17 @@ migrate-database: wait-for-database
                 -e FLYWAY_EDITION=community \
                 flyway/flyway:7.15.0 \
                 -url=jdbc:postgresql://database:5432/mydb -schemas=public -user=user -password=password migrate
+	@until docker run --rm -it \
+                      -e PGPASSWORD=password \
+                      --link \
+                      database:pg \
+                      postgres:13.3 psql -U user -h pg -c "select 1 from organization_role limit 1" -d mydb; do sleep 0.5; done
 
-run: wait-for-database
+run: migrate-database
 	@./gradlew bootRun
+
+test: migrate-database
+	@./gradlew clean test
 
 signup:
 	curl 'http://localhost:8080/user/auth/signup' \

@@ -58,7 +58,7 @@ class SecurityConfiguration {
         authenticationWebFilter.setServerAuthenticationConverter(jwtAuthenticationConverter)
 
         val organizationAuthorizationManager =
-            ReactiveAuthorizationManager { auth: Mono<Authentication>, ctx: AuthorizationContext ->
+            ReactiveAuthorizationManager { auth: Mono<Authentication>, _: AuthorizationContext ->
                 auth.map { AuthorizationDecision(it is CurrentUserOrganizationAuthentication) }
             }
 
