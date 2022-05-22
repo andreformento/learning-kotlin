@@ -12,7 +12,6 @@ import org.springframework.test.web.reactive.server.returnResult
 import org.springframework.util.LinkedMultiValueMap
 import kotlin.random.Random
 
-
 @SpringBootTest
 @AutoConfigureWebTestClient
 class UserControllerTest {
@@ -25,19 +24,20 @@ class UserControllerTest {
         // arrange
         // TODO this is very wrong!!!
         val email = "new@example.com" + Random.nextInt()
+        val password = "pw"
 
         // act
         webClient
             .post()
             .uri("/user/auth/signup")
-            .bodyValue(UserSignupCreation(name = "user test", email = email, password = "pw"))
+            .bodyValue(UserSignupCreation(name = "user test", email = email, password = password))
             .exchange()
             .expectStatus().isNoContent
 
         val loginResponse = webClient
             .post()
             .uri("/user/auth/login")
-            .bodyValue(UserCredentials(email, "pw"))
+            .bodyValue(UserCredentials(email, password))
             .exchange()
             .expectStatus().isOk
             .returnResult<Any>()
@@ -49,14 +49,62 @@ class UserControllerTest {
             .replaceFirst("X-Auth=", "")
             .split(";")[0]
 
-        println("LinkedMultiValueMap(mapOf-> " + LinkedMultiValueMap(mapOf("X-Auth" to listOf(xAuth))))
+        val xAuthCookie = LinkedMultiValueMap(mapOf("X-Auth" to listOf(xAuth)))
+
         webClient
             .get()
             .uri("/user")
-            .cookies { it.addAll(LinkedMultiValueMap(mapOf("X-Auth" to listOf(xAuth)))) }
+            .cookies { it.addAll(xAuthCookie) }
             .exchange()
             .expectStatus().isOk
             .expectBody<LoggedUserResponse>().isEqualTo(LoggedUserResponse(name = "user test", email = email))
+    }
+
+    @Test
+    fun `can login with wrong password`() {
+        // arrange
+        // TODO this is very wrong!!!
+        val email = "new-test-wrong-pass@example.com" + Random.nextInt()
+
+        // act
+        webClient
+            .post()
+            .uri("/user/auth/signup")
+            .bodyValue(UserSignupCreation(name = "user test", email = email, password = "register-password"))
+            .exchange()
+            .expectStatus().isNoContent
+
+        webClient
+            .post()
+            .uri("/user/auth/login")
+            .bodyValue(UserCredentials(email, "other-login-password"))
+            .exchange()
+            .expectStatus().isUnauthorized
+    }
+
+    @Test
+    fun `can not login when password is wrong`() {
+        // arrange
+        val email = "no-user@example.com"
+        val password = "nopass"
+
+        webClient
+            .post()
+            .uri("/user/auth/login")
+            .bodyValue(UserCredentials(email, password))
+            .exchange()
+            .expectStatus().isUnauthorized
+            .returnResult<Any>()
+    }
+
+    @Test
+    fun `can not obtain own user details when logged off`() {
+        // arrange
+        webClient
+            .get()
+            .uri("/user")
+            .exchange()
+            .expectStatus().isUnauthorized
     }
 
 }
