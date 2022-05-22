@@ -40,17 +40,18 @@ signup:
           --data-raw '{"name":"Batman", "email":"a@a.com", "password":"pass123"}'
 
 login:
-	curl -c cookies.txt 'http://localhost:8080/user/auth/login' \
-          -H 'Content-Type: application/json' \
-          --data-raw '{"email":"a@a.com", "password":"pass123"}'
+	curl cookies.txt -c \
+         'http://localhost:8080/user/auth/login' \
+         -H 'Content-Type: application/json' \
+         --data-raw '{"email":"a@a.com", "password":"pass123"}'
 
 get-user:
 	curl -b cookies.txt 'http://localhost:8080/user'
 
 create-organization:
 	curl -b cookies.txt 'http://localhost:8080/organizations' \
-			-H 'Content-Type: application/json' \
-			--data-raw '{"name":"my org", "description": "blah"}'
+         -H 'Content-Type: application/json' \
+         --data-raw '{"name":"my org", "description": "blah"}'
 
 get-organizations:
 	curl -b cookies.txt 'http://localhost:8080/organizations'
