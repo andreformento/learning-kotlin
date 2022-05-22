@@ -20,7 +20,7 @@ class UserControllerTest {
     private lateinit var webClient: WebTestClient
 
     @Test
-    fun `can obtain own user details when logged in`() {
+    fun `can obtain own user details when logged in after create`() {
         // arrange
         // TODO this is very wrong!!!
         val email = "new@example.com" + Random.nextInt()
@@ -61,12 +61,10 @@ class UserControllerTest {
     }
 
     @Test
-    fun `can login with wrong password`() {
-        // arrange
+    fun `can't login with wrong password`() {
         // TODO this is very wrong!!!
         val email = "new-test-wrong-pass@example.com" + Random.nextInt()
 
-        // act
         webClient
             .post()
             .uri("/user/auth/signup")
@@ -84,7 +82,6 @@ class UserControllerTest {
 
     @Test
     fun `can not login when password is wrong`() {
-        // arrange
         val email = "no-user@example.com"
         val password = "nopass"
 
@@ -94,12 +91,10 @@ class UserControllerTest {
             .bodyValue(UserCredentials(email, password))
             .exchange()
             .expectStatus().isUnauthorized
-            .returnResult<Any>()
     }
 
     @Test
     fun `can not obtain own user details when logged off`() {
-        // arrange
         webClient
             .get()
             .uri("/user")

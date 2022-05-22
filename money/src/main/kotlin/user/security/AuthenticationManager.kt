@@ -106,9 +106,13 @@ class TokenAuthenticationManager(
 
     override fun authenticate(authentication: Authentication): Mono<Authentication> = Mono
             .just(authentication)
-            .map { (it.principal as ValidatedUserIdentification) }
+            .map {
+                (it.principal as ValidatedUserIdentification)
+            }
             .flatMap {
-                runBlocking { getAuthentication(email = it.email, credentials = authentication.credentials as String, organizationId = it.organizationId) }.toMono()
+                runBlocking {
+                    getAuthentication(email = it.email, credentials = authentication.credentials as String, organizationId = it.organizationId)
+                }.toMono()
             }
 
     suspend fun getAuthentication(email: String, credentials: String, organizationId: OrganizationId?): Authentication? =
