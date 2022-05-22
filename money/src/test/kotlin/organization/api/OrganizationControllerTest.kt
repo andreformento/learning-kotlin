@@ -6,6 +6,7 @@ import com.andreformento.money.organization.OrganizationRegister
 import com.andreformento.money.organization.toOrganizationId
 import com.andreformento.money.user.security.TokenAuthenticationManager
 import kotlinx.coroutines.runBlocking
+import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient
@@ -22,10 +23,16 @@ fun WebTestClient.withUser(
     email: String,
     credentials: String,
     organizationId: OrganizationId? = null,
-): WebTestClient {
-    val authentication =
-        runBlocking { tokenAuthenticationManager.getAuthentication(email, credentials, organizationId) }!!
-    return this.mutateWith(SecurityMockServerConfigurers.mockAuthentication(authentication))
+): WebTestClient? {
+    return runBlocking {
+        tokenAuthenticationManager.getAuthentication(
+            email,
+            credentials,
+            organizationId
+        )
+    }?.let {
+        this.mutateWith(SecurityMockServerConfigurers.mockAuthentication(it))
+    }
 }
 
 @SpringBootTest
@@ -41,7 +48,7 @@ class OrganizationControllerTest {
     @Test
     fun `can obtain all own user organizations`() {
         webClient
-            .withUser(tokenAuthenticationManager, "iron-maiden@evil.hell", "pass")
+            .withUser(tokenAuthenticationManager, "iron-maiden@evil.hell", "pass")!!
             .get()
             .uri("/organizations")
             .exchange()
@@ -70,7 +77,7 @@ class OrganizationControllerTest {
                 "iron-maiden@evil.hell",
                 "pass",
                 "598e6fd7-0d30-43a6-94ca-68e44c2167aa".toOrganizationId()
-            )
+            )!!
             .get()
             .uri("/organizations/598e6fd7-0d30-43a6-94ca-68e44c2167aa")
             .exchange()
@@ -86,9 +93,22 @@ class OrganizationControllerTest {
     }
 
     @Test
+    fun `can't obtain organization not shared with user`() {
+        assertNull(
+            webClient
+                .withUser(
+                    tokenAuthenticationManager,
+                    "share@blah.io",
+                    "pass",
+                    "598e6fd7-0d30-43a6-94ca-68e44c2167aa".toOrganizationId()
+                )
+        )
+    }
+
+    @Test
     fun `can obtain all shared user organizations`() {
         webClient
-            .withUser(tokenAuthenticationManager, "share@blah.io", "pass")
+            .withUser(tokenAuthenticationManager, "share@blah.io", "pass")!!
             .get()
             .uri("/organizations")
             .exchange()
@@ -107,7 +127,7 @@ class OrganizationControllerTest {
     @Test
     fun `can't obtain organizations from user without organizations`() {
         webClient
-            .withUser(tokenAuthenticationManager, "user@without.org", "pass")
+            .withUser(tokenAuthenticationManager, "user@without.org", "pass")!!
             .get()
             .uri("/organizations")
             .exchange()
@@ -123,7 +143,7 @@ class OrganizationControllerTest {
 
         // create
         val createdEntityResponse = webClient
-            .withUser(tokenAuthenticationManager, "manage@org", "pass")
+            .withUser(tokenAuthenticationManager, "manage@org", "pass")!!
             .post()
             .uri("/organizations")
             .bodyValue(OrganizationRegister(name, description))
@@ -137,7 +157,7 @@ class OrganizationControllerTest {
 
         // read
         webClient
-            .withUser(tokenAuthenticationManager, "manage@org", "pass", organizationId)
+            .withUser(tokenAuthenticationManager, "manage@org", "pass", organizationId)!!
             .get()
             .uri(organizationLocation)
             .exchange()
@@ -147,7 +167,7 @@ class OrganizationControllerTest {
 
         // update
         webClient
-            .withUser(tokenAuthenticationManager, "manage@org", "pass", organizationId)
+            .withUser(tokenAuthenticationManager, "manage@org", "pass", organizationId)!!
             .put()
             .uri(organizationLocation)
             .bodyValue(OrganizationRegister("$name-updated", "$description-updated"))
