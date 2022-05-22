@@ -36,11 +36,11 @@ test: migrate-database
 
 signup:
 	curl 'http://localhost:8080/user/auth/signup' \
-          -H 'Content-Type: application/json' \
-          --data-raw '{"name":"Batman", "email":"a@a.com", "password":"pass123"}'
+         -H 'Content-Type: application/json' \
+         --data-raw '{"name":"Batman", "email":"a@a.com", "password":"pass123"}'
 
 login:
-	curl cookies.txt -c \
+	curl -c cookies.txt \
          'http://localhost:8080/user/auth/login' \
          -H 'Content-Type: application/json' \
          --data-raw '{"email":"a@a.com", "password":"pass123"}'
