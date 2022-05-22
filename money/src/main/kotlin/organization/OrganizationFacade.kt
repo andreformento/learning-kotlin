@@ -22,8 +22,8 @@ class OrganizationFacade(private val organizations: Organizations, private val o
     suspend fun findById(organizationId: OrganizationId) =
         organizations.findById(organizationId)
 
-    suspend fun update(organizationId: OrganizationId, organization: Organization): Int =
-        organizations.update(Organization(organizationId, organization.name, organization.description))
+    suspend fun update(organizationId: OrganizationId, organizationRegister: OrganizationRegister): Organization? =
+        organizations.update(Organization(organizationId, organizationRegister.name, organizationRegister.description))
 
     suspend fun delete(organizationId: OrganizationId) =
         organizations.deleteById(organizationId)

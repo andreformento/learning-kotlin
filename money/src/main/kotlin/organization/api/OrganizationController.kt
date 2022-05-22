@@ -34,8 +34,8 @@ class OrganizationController(private val organizationFacade: OrganizationFacade)
 
     @GetMapping("/{organization-id}")
     suspend fun getById(
-            authentication: CurrentUserOrganizationAuthentication,
-            @PathVariable("organization-id") organizationId: String
+        authentication: CurrentUserOrganizationAuthentication,
+        @PathVariable("organization-id") organizationId: String
     ): ResponseEntity<Organization> {
         println("path variable::$organizationId")
         val foundOrganization = organizationFacade.findById(organizationId.toOrganizationId())
@@ -50,15 +50,17 @@ class OrganizationController(private val organizationFacade: OrganizationFacade)
     suspend fun update(
         authentication: CurrentUserOrganizationAuthentication,
         @PathVariable("organization-id") organizationId: String,
-        @RequestBody organization: Organization
-    ): ResponseEntity<Any> {
-        val updateResult =
-            organizationFacade.update(
-                organizationId = organizationId.toOrganizationId(),
-                organization = organization
-            )
+        @RequestBody organizationRegister: OrganizationRegister
+    ): ResponseEntity<Organization> {
+        val updateResult = organizationFacade.update(
+            organizationId = organizationId.toOrganizationId(),
+            organizationRegister = organizationRegister
+        )
         println("updateResult -> $updateResult")
-        return ResponseEntity.noContent().build()
+        return when {
+            updateResult != null -> ResponseEntity.ok(updateResult)
+            else -> ResponseEntity.notFound().build()
+        }
     }
 
     @DeleteMapping("/{organization-id}")

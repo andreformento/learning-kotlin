@@ -20,12 +20,12 @@ internal interface OrganizationRepository : CoroutineCrudRepository<Organization
         """)
     suspend fun findAllFromUser(@Param("user_id") userId: UserId): Flow<OrganizationEntity>
 
-    @Modifying
-    @Query("update organization set name = :name, description = :description where id = :id")
-    suspend fun update(
-        @Param("id") id: OrganizationId,
-        @Param("name") name: String,
-        @Param("description") description: String,
-    ): Int
+//    @Modifying
+//    @Query("update organization set name = :name, description = :description where id = :id")
+//    suspend fun update(
+//        @Param("id") id: OrganizationId,
+//        @Param("name") name: String,
+//        @Param("description") description: String,
+//    ): Int
 
 }

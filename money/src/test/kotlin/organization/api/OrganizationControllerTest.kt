@@ -2,6 +2,7 @@ package com.andreformento.money.organization.api
 
 import com.andreformento.money.organization.Organization
 import com.andreformento.money.organization.OrganizationId
+import com.andreformento.money.organization.OrganizationRegister
 import com.andreformento.money.organization.toOrganizationId
 import com.andreformento.money.user.security.TokenAuthenticationManager
 import kotlinx.coroutines.runBlocking
@@ -13,6 +14,8 @@ import org.springframework.security.test.web.reactive.server.SecurityMockServerC
 import org.springframework.test.web.reactive.server.WebTestClient
 import org.springframework.test.web.reactive.server.expectBody
 import org.springframework.test.web.reactive.server.expectBodyList
+import org.springframework.test.web.reactive.server.returnResult
+import java.net.URI
 
 fun WebTestClient.withUser(
     tokenAuthenticationManager: TokenAuthenticationManager,
@@ -46,13 +49,44 @@ class OrganizationControllerTest {
             .expectBodyList<Organization>()
             .hasSize(2)
             .contains(
-                Organization(id="ae0d9647-e235-481f-baaf-818ad50ba8d8".toOrganizationId(), name="shared-organization", description = "Shared organization"),
-                Organization(id="598e6fd7-0d30-43a6-94ca-68e44c2167aa".toOrganizationId(), name="other-organization", description = "Other organization from the same user"),
+                Organization(
+                    id = "ae0d9647-e235-481f-baaf-818ad50ba8d8".toOrganizationId(),
+                    name = "shared-organization",
+                    description = "Shared organization"
+                ),
+                Organization(
+                    id = "598e6fd7-0d30-43a6-94ca-68e44c2167aa".toOrganizationId(),
+                    name = "other-organization",
+                    description = "Other organization from the same user"
+                ),
             )
     }
 
     @Test
-    fun `can obtain shared user organizations`() {
+    fun `can obtain my own user organization`() {
+        webClient
+            .withUser(
+                tokenAuthenticationManager,
+                "iron-maiden@evil.hell",
+                "pass",
+                "598e6fd7-0d30-43a6-94ca-68e44c2167aa".toOrganizationId()
+            )
+            .get()
+            .uri("/organizations/598e6fd7-0d30-43a6-94ca-68e44c2167aa")
+            .exchange()
+            .expectStatus().isOk
+            .expectBody<Organization>()
+            .isEqualTo(
+                Organization(
+                    id = "598e6fd7-0d30-43a6-94ca-68e44c2167aa".toOrganizationId(),
+                    name = "other-organization",
+                    description = "Other organization from the same user"
+                )
+            )
+    }
+
+    @Test
+    fun `can obtain all shared user organizations`() {
         webClient
             .withUser(tokenAuthenticationManager, "share@blah.io", "pass")
             .get()
@@ -62,12 +96,16 @@ class OrganizationControllerTest {
             .expectBodyList<Organization>()
             .hasSize(1)
             .contains(
-                Organization(id="ae0d9647-e235-481f-baaf-818ad50ba8d8".toOrganizationId(), name="shared-organization", description = "Shared organization"),
+                Organization(
+                    id = "ae0d9647-e235-481f-baaf-818ad50ba8d8".toOrganizationId(),
+                    name = "shared-organization",
+                    description = "Shared organization"
+                ),
             )
     }
 
     @Test
-    fun `can obtain no organizations from user without organizations`() {
+    fun `can't obtain organizations from user without organizations`() {
         webClient
             .withUser(tokenAuthenticationManager, "user@without.org", "pass")
             .get()
@@ -76,6 +114,48 @@ class OrganizationControllerTest {
             .expectStatus().isOk
             .expectBodyList<Organization>()
             .hasSize(0)
+    }
+
+    @Test
+    fun `CRUD - can manage an organization`() {
+        val name = "my-new-org"
+        val description = "same description"
+
+        // create
+        val createdEntityResponse = webClient
+            .withUser(tokenAuthenticationManager, "manage@org", "pass")
+            .post()
+            .uri("/organizations")
+            .bodyValue(OrganizationRegister(name, description))
+            .exchange()
+            .expectStatus().isCreated
+            .returnResult<Any>()
+
+        val organizationLocation: URI = createdEntityResponse.responseHeaders.location!!
+        val organizationId =
+            organizationLocation.path.substring(organizationLocation.path.lastIndexOf('/') + 1).toOrganizationId()
+
+        // read
+        webClient
+            .withUser(tokenAuthenticationManager, "manage@org", "pass", organizationId)
+            .get()
+            .uri(organizationLocation)
+            .exchange()
+            .expectStatus().isOk
+            .expectBody<Organization>()
+            .isEqualTo(Organization(id = organizationId, name = name, description = description))
+
+        // update
+        webClient
+            .withUser(tokenAuthenticationManager, "manage@org", "pass", organizationId)
+            .put()
+            .uri(organizationLocation)
+            .bodyValue(OrganizationRegister("$name-updated", "$description-updated"))
+            .exchange()
+            .expectStatus().isOk
+            .expectBody<Organization>()
+            .isEqualTo(Organization(id = organizationId, name = "$name-updated", description = "$description-updated"))
+
     }
 
 }
