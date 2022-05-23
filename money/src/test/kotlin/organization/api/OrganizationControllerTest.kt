@@ -35,6 +35,26 @@ fun WebTestClient.withUser(
     }
 }
 
+fun WebTestClient.createOrganization(
+    tokenAuthenticationManager: TokenAuthenticationManager,
+    email: String,
+    credentials: String,
+    organizationId: OrganizationId? = null,
+): OrganizationId {
+    // create
+    val createdEntityResponse = this
+        .withUser(tokenAuthenticationManager, email, credentials, organizationId)!!
+        .post()
+        .uri("/organizations")
+        .bodyValue(OrganizationRegister("my-new-org", "same description"))
+        .exchange()
+        .expectStatus().isCreated
+        .returnResult<Any>()
+
+    val organizationLocation: URI = createdEntityResponse.responseHeaders.location!!
+    return organizationLocation.path.substring(organizationLocation.path.lastIndexOf('/') + 1).toOrganizationId()
+}
+
 @SpringBootTest
 @AutoConfigureWebTestClient
 class OrganizationControllerTest {
@@ -138,44 +158,37 @@ class OrganizationControllerTest {
 
     @Test
     fun `CRUD - can manage an organization`() {
-        val name = "my-new-org"
-        val description = "same description"
-
         // create
-        val createdEntityResponse = webClient
-            .withUser(tokenAuthenticationManager, "manage@org", "pass")!!
-            .post()
-            .uri("/organizations")
-            .bodyValue(OrganizationRegister(name, description))
-            .exchange()
-            .expectStatus().isCreated
-            .returnResult<Any>()
-
-        val organizationLocation: URI = createdEntityResponse.responseHeaders.location!!
-        val organizationId =
-            organizationLocation.path.substring(organizationLocation.path.lastIndexOf('/') + 1).toOrganizationId()
+        val organizationId = webClient.createOrganization(tokenAuthenticationManager, "manage@org", "pass")!!
 
         // read
         webClient
             .withUser(tokenAuthenticationManager, "manage@org", "pass", organizationId)!!
             .get()
-            .uri(organizationLocation)
+            .uri("/organizations/$organizationId")
             .exchange()
             .expectStatus().isOk
             .expectBody<Organization>()
-            .isEqualTo(Organization(id = organizationId, name = name, description = description))
+            .isEqualTo(Organization(id = organizationId, name = "my-new-org", description = "same description"))
 
         // update
         webClient
             .withUser(tokenAuthenticationManager, "manage@org", "pass", organizationId)!!
             .put()
-            .uri(organizationLocation)
-            .bodyValue(OrganizationRegister("$name-updated", "$description-updated"))
+            .uri("/organizations/$organizationId")
+            .bodyValue(OrganizationRegister("my-new-org-updated", "same description-updated"))
             .exchange()
             .expectStatus().isOk
             .expectBody<Organization>()
-            .isEqualTo(Organization(id = organizationId, name = "$name-updated", description = "$description-updated"))
+            .isEqualTo(
+                Organization(
+                    id = organizationId,
+                    name = "my-new-org-updated",
+                    description = "same description-updated"
+                )
+            )
 
+        // TODO test delete
     }
 
 }

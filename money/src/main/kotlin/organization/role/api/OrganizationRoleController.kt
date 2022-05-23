@@ -5,12 +5,16 @@ import com.andreformento.money.organization.role.OrganizationRoleCreation
 import com.andreformento.money.organization.role.OrganizationRoleFacade
 import com.andreformento.money.organization.role.Role
 import com.andreformento.money.organization.toOrganizationId
+import com.andreformento.money.user.UserId
 import com.andreformento.money.user.security.CurrentUserOrganizationAuthentication
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import java.net.URI
 
-data class OrganizationRoleCreationRequest(val role: Role)
+data class OrganizationRoleCreationRequest(
+    val role: Role,
+    val userId: UserId,
+    )
 
 @RestController
 @RequestMapping("/organizations/{organization-id}/roles", produces = ["application/json"])
@@ -19,17 +23,19 @@ class OrganizationRoleController(private val organizationRoleFacade: Organizatio
     @PostMapping
     suspend fun create(
         authentication: CurrentUserOrganizationAuthentication,
-        @PathVariable("organization-id") organizationId: String,
         @RequestBody organizationRoleCreationRequest: OrganizationRoleCreationRequest,
     ): ResponseEntity<OrganizationRoleCreated> {
+        val organizationId = authentication.principal.organization.id
+
         val organizationRoleCreated = organizationRoleFacade.create(
             OrganizationRoleCreation(
-                userId = authentication.principal.id,
-                organizationId = organizationId.toOrganizationId(),
+                userId = organizationRoleCreationRequest.userId,
+                organizationId = organizationId,
                 role = organizationRoleCreationRequest.role,
             )
         )
-        return ResponseEntity.created(URI.create("/organizations/${organizationRoleCreated.id}"))
+        return ResponseEntity
+            .created(URI.create("/organizations/${organizationId}/roles/${organizationRoleCreated.id}"))
             .body(organizationRoleCreated)
     }
 
@@ -43,7 +49,9 @@ class OrganizationRoleController(private val organizationRoleFacade: Organizatio
             organizationId = organizationId.toOrganizationId(),
         )
         println("$deletedCount organization roles deleted")
-        return ResponseEntity.noContent().build()
+
+        return if (deletedCount > 0) ResponseEntity.noContent().build()
+        else ResponseEntity.notFound().build()
     }
 
 }
