@@ -23,7 +23,14 @@ class OrganizationRole(
     val organization: Organization,
     val user: User,
     val role: Role
-)
+) {
+    fun canBeRemovedBy(organizationRoleWhoWouldLikeRemove: OrganizationRole) =
+        this.organization == organizationRoleWhoWouldLikeRemove.organization &&
+                when (organizationRoleWhoWouldLikeRemove.role) {
+                    Role.OWNER -> user != organizationRoleWhoWouldLikeRemove.user
+                    else -> user == organizationRoleWhoWouldLikeRemove.user
+                }
+}
 
 class OrganizationRoleCreation(
     val organizationId: OrganizationId,

@@ -1,20 +1,17 @@
 package com.andreformento.money.organization.role.api
 
-import com.andreformento.money.organization.role.OrganizationRoleCreated
-import com.andreformento.money.organization.role.OrganizationRoleCreation
-import com.andreformento.money.organization.role.OrganizationRoleFacade
-import com.andreformento.money.organization.role.Role
+import com.andreformento.money.organization.role.*
 import com.andreformento.money.organization.toOrganizationId
 import com.andreformento.money.user.UserId
 import com.andreformento.money.user.security.CurrentUserOrganizationAuthentication
+import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import java.net.URI
 
 data class OrganizationRoleCreationRequest(
-    val role: Role,
     val userId: UserId,
-    )
+)
 
 @RestController
 @RequestMapping("/organizations/{organization-id}/roles", produces = ["application/json"])
@@ -31,7 +28,7 @@ class OrganizationRoleController(private val organizationRoleFacade: Organizatio
             OrganizationRoleCreation(
                 userId = organizationRoleCreationRequest.userId,
                 organizationId = organizationId,
-                role = organizationRoleCreationRequest.role,
+                role = Role.ADMIN,
             )
         )
         return ResponseEntity
@@ -42,16 +39,23 @@ class OrganizationRoleController(private val organizationRoleFacade: Organizatio
     @DeleteMapping("/{organization-role-id}")
     suspend fun delete(
         authentication: CurrentUserOrganizationAuthentication,
-        @PathVariable("organization-id") organizationId: String,
-    ): ResponseEntity<Any> {
-        val deletedCount = organizationRoleFacade.delete(
-            userId = authentication.principal.id,
-            organizationId = organizationId.toOrganizationId(),
-        )
-        println("$deletedCount organization roles deleted")
-
-        return if (deletedCount > 0) ResponseEntity.noContent().build()
-        else ResponseEntity.notFound().build()
-    }
+        @PathVariable("organization-id") organizationParam: String,
+        @PathVariable("organization-role-id") organizationRoleParam: String,
+    ): ResponseEntity<Any> =
+        organizationRoleFacade
+            .delete(
+                organizationId = organizationParam.toOrganizationId(),
+                organizationRoleId = organizationRoleParam.toOrganizationRoleId(),
+                authenticatedOrganizationRole = authentication.principal
+            ).let {
+                when (it) {
+                    is OrganizationRoleDeleted -> ResponseEntity.noContent().build()
+                    is UserNotFoundForThisOrganizationRole -> ResponseEntity.notFound().build()
+                    is OrganizationRoleNotFound -> ResponseEntity.notFound().build()
+                    is UserDonTHavePermissionToRemove -> ResponseEntity.status(HttpStatus.FORBIDDEN).body(object {
+                        val errorMessage = "Owner can't remove shared organization with himself"
+                    })
+                }
+            }
 
 }

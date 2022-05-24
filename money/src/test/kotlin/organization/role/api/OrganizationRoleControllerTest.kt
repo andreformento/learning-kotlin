@@ -1,18 +1,13 @@
 package com.andreformento.money.organization.role.api
 
-import com.andreformento.money.organization.OrganizationId
-import com.andreformento.money.organization.OrganizationRegister
+import com.andreformento.money.organization.api.CreatedOrganizationForTest
 import com.andreformento.money.organization.api.createOrganization
 import com.andreformento.money.organization.api.withUser
-import com.andreformento.money.organization.role.Role
-import com.andreformento.money.organization.role.toOrganizationRoleId
-import com.andreformento.money.organization.toOrganizationId
+import com.andreformento.money.user.api.CreatedUserForTest
+import com.andreformento.money.user.api.createUser
 import com.andreformento.money.user.security.TokenAuthenticationManager
-import com.andreformento.money.user.toUserId
-import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Assertions.assertNull
-import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
@@ -32,63 +27,120 @@ class OrganizationRoleControllerTest {
     @Autowired
     private lateinit var tokenAuthenticationManager: TokenAuthenticationManager
 
-    private lateinit var organizationId: OrganizationId
+    private lateinit var createdOrganizationForTest: CreatedOrganizationForTest
+    private lateinit var ownerUser: CreatedUserForTest
+    private lateinit var shareUser: CreatedUserForTest
 
     @BeforeEach
     fun before() {
-        organizationId = webClient.createOrganization(
-            tokenAuthenticationManager,
-            "iron-maiden@evil.hell",
-            "pass",
-        )
+        ownerUser = webClient.createUser()
+        shareUser = webClient.createUser()
+        createdOrganizationForTest =
+            webClient.createOrganization(tokenAuthenticationManager, ownerUser.email, ownerUser.password)
     }
 
-    @Test
-    fun `share organization with other user`() {
+    private fun `validate if user hasn't permission to see organization`(user: CreatedUserForTest) {
         assertNull(
             webClient.withUser(
                 tokenAuthenticationManager,
-                "share@blah.io",
-                "pass",
-                organizationId
+                email = user.email,
+                credentials = user.password,
+                organizationId = createdOrganizationForTest.createdOrganization.organization.id
+            )
+        )
+    }
+
+    private fun `validate if user has permission to see organization`(user: CreatedUserForTest) {
+        assertNotNull(
+            webClient.withUser(
+                tokenAuthenticationManager,
+                email = user.email,
+                credentials = user.password,
+                organizationId = createdOrganizationForTest.createdOrganization.organization.id
             )
         )
 
+    }
+
+    private fun `share organization with other user`(): URI {
         val createdEntityResponse = webClient
-            .withUser(tokenAuthenticationManager, "iron-maiden@evil.hell", "pass", organizationId)!!
+            .withUser(
+                tokenAuthenticationManager,
+                ownerUser.email,
+                ownerUser.password,
+                createdOrganizationForTest.createdOrganization.organization.id
+            )!!
             .post()
-            .uri("/organizations/$organizationId/roles")
-            .bodyValue(OrganizationRoleCreationRequest(
-                role = Role.ADMIN,
-                userId = "f25a42ca-dd73-4c82-9d9c-b7da6d50d0e9".toUserId(),
-            ))
+            .uri("${createdOrganizationForTest.location}/roles")
+            .bodyValue(OrganizationRoleCreationRequest(userId = shareUser.id))
             .exchange()
             .expectStatus().isCreated
             .returnResult<Any>()
 
-        val organizationLocation: URI = createdEntityResponse.responseHeaders.location!!
-        organizationLocation.path.substring(organizationLocation.path.lastIndexOf('/') + 1).toOrganizationRoleId()
+        return createdEntityResponse.responseHeaders.location!!
+    }
 
-        assertNotNull(
-            webClient.withUser(
+    private fun `remove share organization from user`(
+        organizationRoleUri: URI,
+        user: CreatedUserForTest
+    ): WebTestClient.ResponseSpec =
+        webClient
+            .withUser(
                 tokenAuthenticationManager,
-                "share@blah.io",
-                "pass",
-                organizationId
-            )
-        )
+                user.email,
+                user.password,
+                createdOrganizationForTest.createdOrganization.organization.id
+            )!!
+            .delete()
+            .uri(organizationRoleUri)
+            .exchange()
+
+    @Test
+    fun `should share organization with other user`() {
+        `validate if user hasn't permission to see organization`(shareUser)
+        `share organization with other user`()
+        `validate if user has permission to see organization`(shareUser)
+        `validate if user has permission to see organization`(ownerUser)
     }
 
     @Test
-    fun `remove share organization with other user`() {
-
-        TODO()
+    fun `user can remove shared organization with him`() {
+        val organizationRoleUri = `share organization with other user`()
+        `validate if user has permission to see organization`(shareUser)
+        `remove share organization from user`(organizationRoleUri, shareUser).expectStatus().isNoContent
+        `validate if user hasn't permission to see organization`(shareUser)
+        `validate if user has permission to see organization`(ownerUser)
     }
 
     @Test
-    fun `don't remove your own organization share`() {
-        TODO()
+    fun `shared user can't remove owner of organization`() {
+        `share organization with other user`()
+        val organizationRoleUri =
+            URI("/organizations/${createdOrganizationForTest.createdOrganization.organization.id}/roles/${createdOrganizationForTest.createdOrganization.organizationRole.id}")
+        `remove share organization from user`(organizationRoleUri, shareUser)
+            .expectStatus().isForbidden
+            .expectBody().jsonPath("$.errorMessage").isEqualTo("Owner can't remove shared organization with himself")
+        `validate if user has permission to see organization`(shareUser)
+        `validate if user has permission to see organization`(ownerUser)
     }
 
+    @Test
+    fun `owner user of organization should remove shared organization`() {
+        val organizationRoleUri = `share organization with other user`()
+        `validate if user has permission to see organization`(shareUser)
+        `remove share organization from user`(organizationRoleUri, ownerUser).expectStatus().isNoContent
+        `validate if user hasn't permission to see organization`(shareUser)
+        `validate if user has permission to see organization`(ownerUser)
+    }
+
+    // TODO
+//    @Test
+    fun `shouldn't remove your own organization share`() {
+        // TODO URI without org role id???
+        `remove share organization from user`(
+            URI("/organizations/$createdOrganizationForTest/roles/$"),
+            ownerUser
+        ).expectStatus().isBadRequest
+    }
 
 }

@@ -1,9 +1,6 @@
 package com.andreformento.money.organization.api
 
-import com.andreformento.money.organization.Organization
-import com.andreformento.money.organization.OrganizationFacade
-import com.andreformento.money.organization.OrganizationRegister
-import com.andreformento.money.organization.toOrganizationId
+import com.andreformento.money.organization.*
 import com.andreformento.money.user.security.CurrentUserAuthentication
 import com.andreformento.money.user.security.CurrentUserOrganizationAuthentication
 import kotlinx.coroutines.flow.Flow
@@ -18,7 +15,6 @@ class OrganizationController(private val organizationFacade: OrganizationFacade)
     @GetMapping
     suspend fun getAllFromUser(authentication: CurrentUserAuthentication): Flow<Organization> {
         val currentUser = authentication.principal
-
         return organizationFacade.getAllFromUser(currentUser)
     }
 
@@ -26,10 +22,10 @@ class OrganizationController(private val organizationFacade: OrganizationFacade)
     suspend fun create(
         authentication: CurrentUserAuthentication,
         @RequestBody organizationRegister: OrganizationRegister
-    ): ResponseEntity<Organization> {
+    ): ResponseEntity<CreatedOrganization> {
         val currentUser = authentication.principal
         val createdOrganization = organizationFacade.create(currentUser, organizationRegister)
-        return ResponseEntity.created(URI.create("/organizations/${createdOrganization.id}")).body(createdOrganization)
+        return ResponseEntity.created(URI.create("/organizations/${createdOrganization.organization.id}")).body(createdOrganization)
     }
 
     @GetMapping("/{organization-id}")

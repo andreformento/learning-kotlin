@@ -1,11 +1,9 @@
 package com.andreformento.money.organization.api
 
-import com.andreformento.money.organization.Organization
-import com.andreformento.money.organization.OrganizationId
-import com.andreformento.money.organization.OrganizationRegister
-import com.andreformento.money.organization.toOrganizationId
+import com.andreformento.money.organization.*
 import com.andreformento.money.user.security.TokenAuthenticationManager
 import kotlinx.coroutines.runBlocking
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
@@ -17,6 +15,8 @@ import org.springframework.test.web.reactive.server.expectBody
 import org.springframework.test.web.reactive.server.expectBodyList
 import org.springframework.test.web.reactive.server.returnResult
 import java.net.URI
+
+class CreatedOrganizationForTest(val createdOrganization: CreatedOrganization, val location: URI)
 
 fun WebTestClient.withUser(
     tokenAuthenticationManager: TokenAuthenticationManager,
@@ -40,19 +40,24 @@ fun WebTestClient.createOrganization(
     email: String,
     credentials: String,
     organizationId: OrganizationId? = null,
-): OrganizationId {
+): CreatedOrganizationForTest {
     // create
-    val createdEntityResponse = this
+    val response = this
         .withUser(tokenAuthenticationManager, email, credentials, organizationId)!!
         .post()
         .uri("/organizations")
         .bodyValue(OrganizationRegister("my-new-org", "same description"))
         .exchange()
         .expectStatus().isCreated
-        .returnResult<Any>()
 
-    val organizationLocation: URI = createdEntityResponse.responseHeaders.location!!
-    return organizationLocation.path.substring(organizationLocation.path.lastIndexOf('/') + 1).toOrganizationId()
+    val createdEntityResponse = response.returnResult<Organization>()
+    val createdOrganization = response.returnResult<CreatedOrganization>().responseBody.blockFirst()!!
+
+    assertThat(createdOrganization.organization.id).isNotNull()
+    assertThat(createdOrganization.organization.name).isEqualTo("my-new-org")
+    assertThat(createdOrganization.organization.description).isEqualTo("same description")
+
+    return CreatedOrganizationForTest(createdOrganization, createdEntityResponse.responseHeaders.location!!)
 }
 
 @SpringBootTest
@@ -159,30 +164,36 @@ class OrganizationControllerTest {
     @Test
     fun `CRUD - can manage an organization`() {
         // create
-        val organizationId = webClient.createOrganization(tokenAuthenticationManager, "manage@org", "pass")!!
+        val createdOrganizationForTest = webClient.createOrganization(tokenAuthenticationManager, "manage@org", "pass")
 
         // read
         webClient
-            .withUser(tokenAuthenticationManager, "manage@org", "pass", organizationId)!!
+            .withUser(tokenAuthenticationManager, "manage@org", "pass", createdOrganizationForTest.createdOrganization.organization.id)!!
             .get()
-            .uri("/organizations/$organizationId")
+            .uri(createdOrganizationForTest.location)
             .exchange()
             .expectStatus().isOk
             .expectBody<Organization>()
-            .isEqualTo(Organization(id = organizationId, name = "my-new-org", description = "same description"))
+            .isEqualTo(
+                Organization(
+                    id = createdOrganizationForTest.createdOrganization.organization.id,
+                    name = "my-new-org",
+                    description = "same description"
+                )
+            )
 
         // update
         webClient
-            .withUser(tokenAuthenticationManager, "manage@org", "pass", organizationId)!!
+            .withUser(tokenAuthenticationManager, "manage@org", "pass", createdOrganizationForTest.createdOrganization.organization.id)!!
             .put()
-            .uri("/organizations/$organizationId")
+            .uri(createdOrganizationForTest.location)
             .bodyValue(OrganizationRegister("my-new-org-updated", "same description-updated"))
             .exchange()
             .expectStatus().isOk
             .expectBody<Organization>()
             .isEqualTo(
                 Organization(
-                    id = organizationId,
+                    id = createdOrganizationForTest.createdOrganization.organization.id,
                     name = "my-new-org-updated",
                     description = "same description-updated"
                 )

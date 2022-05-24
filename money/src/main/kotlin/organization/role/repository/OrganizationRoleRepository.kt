@@ -25,10 +25,11 @@ internal interface OrganizationRoleRepository : CoroutineCrudRepository<Organiza
     )
 
     @Modifying
-    @Query("delete from organization_role where user_id = :user_id and organization_id = :organization_id ")
+    @Query("delete from organization_role where user_id = :user_id and organization_id = :organization_id and id = :organization_role_id")
     suspend fun delete(
         @Param("user_id") userId: UserId,
         @Param("organization_id") organizationId: OrganizationId,
+        @Param("organization_role_id") organizationRoleId: OrganizationRoleId,
     ): Int
 
 }
