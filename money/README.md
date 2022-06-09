@@ -22,7 +22,6 @@
 
 ## API
 
-- http://localhost:8080/docs-ui
 - http://localhost:8080/actuator/health
 - http://localhost:8080/actuator/health/liveness
 - http://localhost:8080/actuator/health/readiness

@@ -21,19 +21,6 @@ import reactor.core.publisher.Mono
 class SecurityConfiguration {
 
     val permittedGetPaths = arrayOf(
-        // -- Swagger UI v2
-        "/v2/api-docs",
-        "/swagger-resources",
-        "/swagger-resources/**",
-        "/configuration/ui",
-        "/configuration/security",
-        "/swagger-ui.html",
-        "/webjars/**",
-        "/favicon.ico",
-        // -- Swagger UI v3 (OpenAPI)
-        "/v3/api-docs/**",
-        "/swagger-ui/**",
-        "/docs-ui/**",
         // actuator
         "/actuator/health",
         "/actuator/health/liveness",

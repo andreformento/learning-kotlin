@@ -4,9 +4,6 @@ spring:
     username: "user"
     password: "password"
 
-springdoc:
-  swagger-ui.path: "/docs-ui"
-
 management:
   endpoints.web.exposure.include: "health,prometheus"
   endpoint.health.group:
