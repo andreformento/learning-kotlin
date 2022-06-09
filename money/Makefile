@@ -1,4 +1,4 @@
-database:
+start-database:
 	@docker rm -f database || true
 	@docker run -d \
 	            --name=database \
@@ -8,7 +8,7 @@ database:
 	            -e POSTGRES_PASSWORD=password \
 	            postgres:13.3
 
-wait-for-database: database
+wait-for-database: start-database
 	@until docker run --rm -it \
                       -e PGPASSWORD=password \
                       --link \
@@ -18,7 +18,7 @@ wait-for-database: database
 migrate-database: wait-for-database
 	@docker run --rm \
                 --link database:pg \
-                -v $$(pwd)/migrations/:/flyway/sql:ro \
+                -v $$(pwd)/migrations:/flyway/sql:ro \
                 -e FLYWAY_EDITION=community \
                 flyway/flyway:7.15.0 \
                 -url=jdbc:postgresql://database:5432/mydb -schemas=public -user=user -password=password migrate

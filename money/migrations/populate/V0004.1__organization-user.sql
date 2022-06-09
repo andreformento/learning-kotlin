@@ -1,13 +1,3 @@
-CREATE TYPE role_description AS ENUM ('owner', 'admin');
-
-CREATE TABLE organization_role (
-    id uuid DEFAULT uuid_generate_v4() PRIMARY KEY,
-    user_id uuid REFERENCES users(id),
-    organization_id uuid REFERENCES organization(id),
-    organization_role role_description NOT NULL,
-    unique(user_id, organization_id)
-);
-
 INSERT INTO organization_role (id, user_id, organization_id, organization_role) VALUES
 ('8262155e-db3f-4619-9d3f-c75296cfa2cb', '6340ac3d-4a68-4a2c-bbf6-5e7bcc4a6d07', 'ae0d9647-e235-481f-baaf-818ad50ba8d8', 'owner'),
 ('33b5a856-106f-46fa-a37f-6b6e0651046b', '6340ac3d-4a68-4a2c-bbf6-5e7bcc4a6d07', '598e6fd7-0d30-43a6-94ca-68e44c2167aa', 'owner'),

@@ -21,7 +21,9 @@ class PostgresHealthIndicator(private val repository: Users) : HealthIndicator {
             }
 
             if (firstEntity == null) {
-                Health.down().withDetail("Cannot get any data from database", object {}).build()
+                Health.down().withDetail("database", object {
+                    val message = "Cannot get any data from database"
+                }).build()
             } else {
                 println("firstPost $firstEntity")
                 Health.up().build()
