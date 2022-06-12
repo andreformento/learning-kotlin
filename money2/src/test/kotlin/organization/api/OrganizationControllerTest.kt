@@ -16,9 +16,11 @@ import org.springframework.test.web.reactive.server.expectBodyList
 import org.springframework.test.web.reactive.server.returnResult
 import java.net.URI
 
-class CreatedOrganizationForTest(val createdOrganization: CreatedOrganization, val location: URI)
+class CreatedOrganizationForTest(val userEmail: String, val createdOrganization: CreatedOrganization, val location: URI) {
+    fun uri() = "/organizations/${this.createdOrganization.organization.id}"
+}
 
-fun WebTestClient.createOrganization(email: String): CreatedOrganizationForTest {
+fun WebTestClient.createOrganization(email: String = createAnEmail()): CreatedOrganizationForTest {
     // create
     val response = this
         .withUser(email)
@@ -35,7 +37,11 @@ fun WebTestClient.createOrganization(email: String): CreatedOrganizationForTest 
     assertThat(createdOrganization.organization.name).isEqualTo("my-new-org")
     assertThat(createdOrganization.organization.description).isEqualTo("some description")
 
-    return CreatedOrganizationForTest(createdOrganization, response.responseHeaders.location!!)
+    return CreatedOrganizationForTest(
+        userEmail = email,
+        createdOrganization = createdOrganization,
+        location = response.responseHeaders.location!!
+    )
 }
 
 @SpringBootTest
