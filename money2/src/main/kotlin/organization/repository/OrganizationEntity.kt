@@ -13,7 +13,10 @@ data class OrganizationEntity(
     @Column("name") val name: String,
     @Column("description") val description: String
 ) {
-    constructor(organizationRegister: OrganizationRegister) : this(name = organizationRegister.name, description = organizationRegister.description)
+    constructor(organizationRegister: OrganizationRegister) : this(
+        name = organizationRegister.name,
+        description = organizationRegister.description
+    )
 
     fun toModel(): Organization {
         return Organization(this.id!!, this.name, this.description)

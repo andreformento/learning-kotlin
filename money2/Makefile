@@ -26,7 +26,7 @@ migrate-database: wait-for-database
                       -e PGPASSWORD=password \
                       --link \
                       database:pg \
-                      postgres:13.3 psql -U user -h pg -c "select 1 from organization_role limit 1" -d mydb; do sleep 0.5; done
+                      postgres:13.3 psql -U user -h pg -c "select 1 from organization_share limit 1" -d mydb; do sleep 0.5; done
 
 run: migrate-database
 	@./gradlew bootRun

@@ -11,11 +11,6 @@ class UserFacade(private val users: Users) {
         return users.create(userRegister)
     }
 
-    suspend fun findById(userId: UserId): User? {
-        // TODO authorization
-        return users.findById(userId)
-    }
-
     suspend fun findByEmail(email: String): User? {
         // TODO authorization
         return users.findByEmail(email)

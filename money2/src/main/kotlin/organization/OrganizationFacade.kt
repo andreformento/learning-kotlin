@@ -1,21 +1,21 @@
 package com.andreformento.money.organization
 
 import com.andreformento.money.organization.repository.Organizations
-import com.andreformento.money.organization.role.OrganizationRoleCreated
-import com.andreformento.money.organization.role.OrganizationRoleCreation
-import com.andreformento.money.organization.role.Role
-import com.andreformento.money.organization.role.repository.OrganizationRoles
+import com.andreformento.money.organization.share.OrganizationShareRegister
+import com.andreformento.money.organization.share.OrganizationShared
+import com.andreformento.money.organization.share.Role
+import com.andreformento.money.organization.share.repository.OrganizationShares
 import com.andreformento.money.user.security.CurrentUser
 import kotlinx.coroutines.flow.Flow
 import org.springframework.stereotype.Service
 
 class CreatedOrganization(
     val organization: Organization,
-    val organizationRole: OrganizationRoleCreated,
+    val organizationRole: OrganizationShared,
 )
 
 @Service
-class OrganizationFacade(private val organizations: Organizations, private val organizationRoles: OrganizationRoles) {
+class OrganizationFacade(private val organizations: Organizations, private val organizationShares: OrganizationShares) {
 
     suspend fun getAllFromUser(currentUser: CurrentUser): Flow<Organization> =
         organizations.findAllFromUser(currentUser)
@@ -26,12 +26,15 @@ class OrganizationFacade(private val organizations: Organizations, private val o
             .let {
                 CreatedOrganization(
                     organization = it,
-                    organizationRole = organizationRoles.save(OrganizationRoleCreation(it.id, currentUser.id, Role.OWNER))
+                    organizationRole = organizationShares.save(
+                        OrganizationShareRegister(
+                            it.id,
+                            currentUser.id,
+                            Role.OWNER
+                        )
+                    )
                 )
             }
-
-    suspend fun findById(organizationId: OrganizationId) =
-        organizations.findById(organizationId)
 
     suspend fun update(organizationId: OrganizationId, organizationRegister: OrganizationRegister): Organization? =
         organizations.update(Organization(organizationId, organizationRegister.name, organizationRegister.description))

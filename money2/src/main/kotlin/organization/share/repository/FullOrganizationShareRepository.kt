@@ -1,16 +1,15 @@
-package com.andreformento.money.organization.role.repository
+package com.andreformento.money.organization.share.repository
 
 import com.andreformento.money.organization.OrganizationId
-import com.andreformento.money.organization.role.OrganizationRoleId
-import com.andreformento.money.user.UserId
+import com.andreformento.money.organization.share.OrganizationShareId
 import org.springframework.data.r2dbc.repository.Query
 import org.springframework.data.repository.kotlin.CoroutineCrudRepository
 import org.springframework.data.repository.query.Param
 import org.springframework.stereotype.Repository
 
 @Repository
-internal interface FullOrganizationRoleRepository :
-    CoroutineCrudRepository<FullOrganizationRoleEntity, OrganizationRoleId> {
+internal interface FullOrganizationShareRepository :
+    CoroutineCrudRepository<FullOrganizationRoleEntity, OrganizationShareId> {
 
     companion object {
         private const val baseQuery = """
@@ -23,7 +22,7 @@ internal interface FullOrganizationRoleRepository :
                u.email as user_email,
                cast(orr.organization_role as varchar) as organization_role
           FROM organization o
-    INNER JOIN organization_role orr on orr.organization_id = o.id
+    INNER JOIN organization_share orr on orr.organization_id = o.id
     INNER JOIN users u on u.id = orr.user_id
          WHERE o.id = :organization_id
         """
@@ -35,10 +34,10 @@ internal interface FullOrganizationRoleRepository :
         @Param("user_email") userEmail: String,
     ): FullOrganizationRoleEntity?
 
-    @Query("$baseQuery AND orr.id = :organization_role_id")
+    @Query("$baseQuery AND orr.id = :organization_share_id")
     suspend fun getUnsafeUserOrganization(
         @Param("organization_id") organizationId: OrganizationId,
-        @Param("organization_role_id") organizationRoleId: OrganizationRoleId,
+        @Param("organization_share_id") organizationShareId: OrganizationShareId,
     ): FullOrganizationRoleEntity?
 
 }

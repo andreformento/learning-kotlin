@@ -11,12 +11,14 @@ import org.springframework.stereotype.Repository
 @Repository
 internal interface OrganizationRepository : CoroutineCrudRepository<OrganizationEntity, OrganizationId> {
 
-    @Query("""
+    @Query(
+        """
         SELECT o.*
           FROM organization o
-    INNER JOIN organization_role orr on orr.organization_id = o.id
+    INNER JOIN organization_share orr on orr.organization_id = o.id
          WHERE orr.user_id = :user_id
-        """)
+        """
+    )
     suspend fun findAllFromUser(@Param("user_id") userId: UserId): Flow<OrganizationEntity>
 
 }

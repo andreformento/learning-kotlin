@@ -1,8 +1,8 @@
-package com.andreformento.money.organization.role.repository
+package com.andreformento.money.organization.share.repository
 
 import com.andreformento.money.organization.Organization
 import com.andreformento.money.organization.OrganizationId
-import com.andreformento.money.organization.role.*
+import com.andreformento.money.organization.share.*
 import com.andreformento.money.user.User
 import com.andreformento.money.user.UserId
 import org.springframework.data.annotation.Id
@@ -10,45 +10,45 @@ import org.springframework.data.relational.core.mapping.Column
 import org.springframework.data.relational.core.mapping.Table
 import java.util.*
 
-@Table("organization_role")
-data class OrganizationRoleEntity(
-    @Id val id: OrganizationRoleId,
+@Table("organization_share")
+data class OrganizationShareEntity(
+    @Id val id: OrganizationShareId,
     @Column("user_id") val userId: UserId,
     @Column("organization_id") val organizationId: OrganizationId,
-    @Column("organization_role") val organizationRole: String
+    @Column("organization_role") val role: String
 ) {
 
-    constructor(organizationRoleCreation: OrganizationRoleCreation) : this(
+    constructor(organizationShareRegister: OrganizationShareRegister) : this(
         id = UUID.randomUUID(),
-        userId = organizationRoleCreation.userId,
-        organizationId = organizationRoleCreation.organizationId,
-        organizationRole = organizationRoleCreation.role.toString().lowercase(),
+        userId = organizationShareRegister.userId,
+        organizationId = organizationShareRegister.organizationId,
+        role = organizationShareRegister.role.toString().lowercase(),
     )
 
-    fun toCreated(): OrganizationRoleCreated =
-        OrganizationRoleCreated(
+    fun toCreated(): OrganizationShared =
+        OrganizationShared(
             id = this.id,
             organizationId = this.organizationId,
             userId = this.userId,
-            role = Role.valueOf(this.organizationRole.uppercase())
+            role = Role.valueOf(this.role.uppercase())
         )
 
 }
 
-@Table("organization_role")
+@Table("organization_share")
 data class FullOrganizationRoleEntity(
-    @Id val id: OrganizationRoleId,
+    @Id val id: OrganizationShareId,
     @Column("organization_id") val organizationId: OrganizationId,
     @Column("organization_name") val organizationName: String,
     @Column("organization_description") val organizationDescription: String,
     @Column("user_id") val userId: UserId,
     @Column("user_name") val userName: String,
     @Column("user_email") val userEmail: String,
-    @Column("organization_role") val organizationRole: String
+    @Column("organization_role") val role: String
 ) {
 
-    fun toModel(): OrganizationRole =
-        OrganizationRole(
+    fun toModel(): OrganizationShare =
+        OrganizationShare(
             id = this.id,
             organization = Organization(
                 id = organizationId,
@@ -60,7 +60,7 @@ data class FullOrganizationRoleEntity(
                 name = userName,
                 email = userEmail,
             ),
-            role = Role.valueOf(this.organizationRole.uppercase())
+            role = Role.valueOf(this.role.uppercase())
         )
 
 }

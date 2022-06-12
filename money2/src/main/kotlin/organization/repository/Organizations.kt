@@ -14,18 +14,17 @@ class Organizations internal constructor(private val organizationRepository: Org
     suspend fun findAllFromUser(currentUser: CurrentUser): Flow<Organization> =
         organizationRepository.findAllFromUser(userId = currentUser.id).map(OrganizationEntity::toModel)
 
-    suspend fun findById(organizationId: OrganizationId): Organization? =
-        organizationRepository.findById(organizationId)?.toModel()
-
     suspend fun save(organizationRegister: OrganizationRegister): Organization =
         organizationRepository.save(OrganizationEntity(organizationRegister)).toModel()
 
     suspend fun update(organization: Organization): Organization =
-        organizationRepository.save(OrganizationEntity(
-            id=organization.id,
-            name=organization.name,
-            description = organization.description,
-        )).toModel()
+        organizationRepository.save(
+            OrganizationEntity(
+                id = organization.id,
+                name = organization.name,
+                description = organization.description,
+            )
+        ).toModel()
 
     suspend fun deleteById(id: OrganizationId) =
         organizationRepository.deleteById(id)

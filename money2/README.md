@@ -27,15 +27,15 @@
 - http://localhost:8080/actuator/health/readiness
 - http://localhost:8080/actuator/prometheus
 
-| URI pattern | Method | Description |
-|-------------|--------|-------------|
-| `/organizations` | `GET` | Get all organizations |
-| `/organizations` | `POST` | Create a organization |
-| `/organizations/{organization-id}` | `GET` | Get one organization |
-| `/organizations/{organization-id}` | `PUT` | Update a organization |
-| `/organizations/{organization-id}` | `DELETE` | Delete a organization |
-| `/organizations/{organization-id}/roles` | `GET` | Roles from a organization |
-| `/organizations/{organization-id}/roles/{role-id}` | `GET` | A role from a organization |
+| URI pattern                                          | Method   | Description                  |
+|------------------------------------------------------|----------|------------------------------|
+| `/organizations`                                     | `GET`    | Get all organizations        |
+| `/organizations`                                     | `POST`   | Create a organization        |
+| `/organizations/{organization-id}`                   | `GET`    | Get one organization         |
+| `/organizations/{organization-id}`                   | `PUT`    | Update a organization        |
+| `/organizations/{organization-id}`                   | `DELETE` | Delete a organization        |
+| `/organizations/{organization-id}/shares`            | `GET`    | Shares from a organization   |
+| `/organizations/{organization-id}/shares/{share-id}` | `GET`    | A Shares from a organization |
 
 ### Terminal example
 
